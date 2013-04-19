@@ -1,6 +1,6 @@
 /*
 /**
- *   Copyright (C) 2013, Lanka Software Foundation and and University of Maryland.
+ *   Copyright (C) 2013, Lanka Software Foundation and University of Maryland.
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU Affero General Public License as
