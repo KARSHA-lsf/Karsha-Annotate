@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.karsha</groupId>
-    <artifactId>KarhsaAnnotate</artifactId>
+    <artifactId>KarshaAnnotate</artifactId>
     <packaging>war</packaging>
 
     <properties>
