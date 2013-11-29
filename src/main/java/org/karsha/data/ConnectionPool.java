@@ -53,9 +53,9 @@ public class ConnectionPool {
             
             
             /*the correct DB credentials for WSO@*/
-          String url = "jdbc:mysql://rss1.stratoslive.wso2.com/karshaannotate_2_karsha_opensource_lk";
-          String username = "admin_2_lQrhzZUK";
-          String password = "admin@lsf";     
+          String url = "jdbc:mysql://localhost:3306/karshaannotate";
+          String username = "karshaa";
+          String password = "karshaa";     
            
 //      String url = "jdbc:mysql://localhost:3306/karshaannotate";      
 //            String username = "root";
