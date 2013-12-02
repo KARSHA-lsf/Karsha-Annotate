@@ -16,6 +16,8 @@
         <url-pattern>/newuser</url-pattern>
         <url-pattern>/deletemarkedupdata</url-pattern>
         <url-pattern>/createcollection</url-pattern>
+        <url-pattern>/docsearch</url-pattern>
+        <url-pattern>/semanticSearch</url-pattern>
         <!--        <url-pattern>/index.jsp</url-pattern>-->
     </filter-mapping>
     <servlet>
@@ -107,6 +109,14 @@
     <servlet>
         <servlet-name>MarkUpDocSectionsServelet</servlet-name>
         <servlet-class>org.karsha.controler.MarkUpDocSectionsServelet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>DocSearchServelet</servlet-name>
+        <servlet-class>org.karsha.controler.DocSearchServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>SemanticSearchServelet</servlet-name>
+        <servlet-class>org.karsha.controler.SemanticSearchServlet</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>ControlerServelet</servlet-name>
@@ -247,6 +257,17 @@
         <url-pattern>/deleterows_doc</url-pattern>
         <url-pattern>/getterms_doc</url-pattern>
     </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>DocSearchServelet</servlet-name>
+        <url-pattern>/docsearch</url-pattern>
+        <url-pattern>/getsimilardocuments</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>SemanticSearchServelet</servlet-name>
+        <url-pattern>/semanticSearch</url-pattern>
+        <url-pattern>/getsimilardocs</url-pattern>
+    </servlet-mapping>
+
     <session-config>
         <session-timeout>
             20

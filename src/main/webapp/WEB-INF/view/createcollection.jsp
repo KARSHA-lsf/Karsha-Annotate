@@ -102,6 +102,11 @@
                         <a class="nav" href="createdoccollection">Doc Section MarkUp</a>
                         <!--                        <a class="nav" href="docSimilarity">Doc Similarity</a>-->
                     </p>
+                    <p>
+                        <a class="nav">Search</a>
+                        <a class="nav sub" href="docsearch">Document Similarity</a>
+                        <a class="nav sub" href="semanticSearch">Semantic Similarity</a>
+                    </p>
 
                 </div>
 

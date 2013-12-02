@@ -74,7 +74,45 @@ public class DocumentDB {
             pool.freeConnection(connection);
         }
     }
+    public static ArrayList<Document> getAllDocuments() {
 
+        ConnectionPool pool = ConnectionPool.getInstance();
+        Connection connection = pool.getConnection();
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+
+        String query = "select * from document";
+
+        try
+        {
+            ps = connection.prepareStatement(query);
+           // ps.setInt(1, collectionId);
+            rs = ps.executeQuery();
+            ArrayList<Document> documentList = new ArrayList<Document>();
+            while (rs.next())
+            {
+                Document d = new Document();
+                d.setDocId(Integer.parseInt(rs.getString("DocId")));
+                d.setDocumentName(rs.getString("Name").replaceAll("[\";\',.%$]()", " ").trim());
+                // d.setMarkUpStatus(rs.getBoolean("MarkUpStatus"));
+
+                documentList.add(d);
+            }
+            return documentList;
+
+        }
+        catch(SQLException e)
+        {
+            e.printStackTrace();
+            return null;
+        }
+        finally
+        {
+            DBUtil.closeResultSet(rs);
+            DBUtil.closePreparedStatement(ps);
+            pool.freeConnection(connection);
+        }
+    }
     public static ArrayList<Document> getAllMarkedDocumentsByCollectionId(int collectionId) {
         
         ConnectionPool pool = ConnectionPool.getInstance();
@@ -114,8 +152,44 @@ public class DocumentDB {
             pool.freeConnection(connection);
         }
     }
-    
-    
+
+    public static ArrayList<Document> getSimilarDocuments() {
+
+        ConnectionPool pool = ConnectionPool.getInstance();
+        Connection connection = pool.getConnection();
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+
+        String query = "select * from document";
+
+        try
+        {
+            ps = connection.prepareStatement(query);
+            rs = ps.executeQuery();
+            ArrayList<Document> documentList = new ArrayList<Document>();
+            while (rs.next())
+            {
+                Document d = new Document();
+                d.setDocId(Integer.parseInt(rs.getString("DocId")));
+                d.setDocumentName(rs.getString("Name").replaceAll("[\";\',.%$]()", " ").trim());
+
+                documentList.add(d);
+            }
+            return documentList;
+
+        }
+        catch(SQLException e)
+        {
+            e.printStackTrace();
+            return null;
+        }
+        finally
+        {
+            DBUtil.closeResultSet(rs);
+            DBUtil.closePreparedStatement(ps);
+            pool.freeConnection(connection);
+        }
+    }
     public static int insert(Document newDocument) {
         
         ConnectionPool pool = ConnectionPool.getInstance();
