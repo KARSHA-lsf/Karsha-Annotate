@@ -99,7 +99,7 @@
         <p>
             <a class="nav">Search</a>
             <a class="nav sub" href="docsearch">Document Similarity</a>
-            <a class="nav sub" href="docsearch">Semantic Similarity</a>
+            <a class="nav sub" href="semanticSearch">Semantic Similarity</a>
         </p>
 
     </div>
@@ -202,7 +202,6 @@
 
                     <select name="document_name" size="1"  id="document_name" style="width:400px">
                         <%
-
                             ArrayList<Document> documentNameList = (ArrayList<Document>) session.getAttribute("documentList");
                             for (int i = 0; i < documentNameList.size(); i++) {
                         %>

@@ -1,7 +1,7 @@
 package org.karsha.controler;
 
-import org.karsha.data.DocumentDB;
-import org.karsha.entities.Document;
+import org.karsha.data.FiboDB;
+import org.karsha.entities.FiboTerm;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -28,8 +28,8 @@ public class SemanticSearchServlet extends HttpServlet {
         String url = null;
 
         if(userPath.equals("/semanticSearch")) {
-            ArrayList<Document> documentList = DocumentDB.getAllDocuments();
-            session.setAttribute("documentList", documentList);
+            ArrayList<FiboTerm> fiboList = FiboDB.getAllFiboTerms();
+            session.setAttribute("fiboList", fiboList);
             url = "/WEB-INF/view/semanticSearch.jsp";
         }
 
@@ -43,16 +43,16 @@ public class SemanticSearchServlet extends HttpServlet {
         HttpSession session = request.getSession();
         String url = null;
 
-        String selectedDocumentName = (String)request.getParameter("document_name");
-        session.setAttribute("selectedDocumentName", selectedDocumentName);
+        String selectedFiboTerms = (String)request.getParameter("fibo_term");
+        session.setAttribute("selectedFiboTerms", selectedFiboTerms);
         if(userPath.equals("/getsimilardocs")) {
 
-            ArrayList<Document> documentList = DocumentDB.getSimilarDocuments();
-            session.setAttribute("documentList", documentList);
+            ArrayList<FiboTerm> fiboList =FiboDB.getAllFiboTerms();
+            session.setAttribute("fiboList", fiboList);
             url = "/WEB-INF/view/semanticSearch.jsp";
 
         }
-        request.setAttribute("selectedDocumentName", selectedDocumentName);
+        request.setAttribute("selectedFiboTerms", selectedFiboTerms);
         RequestDispatcher dispatcher =getServletContext().getRequestDispatcher(url);
         dispatcher.forward(request, response);
     }

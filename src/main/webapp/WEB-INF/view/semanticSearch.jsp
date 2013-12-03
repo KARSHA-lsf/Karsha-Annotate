@@ -31,6 +31,7 @@
     <meta name="description" content="Your description goes here" />
     <meta name="keywords" content="your,keywords,goes,here" />
     <meta name="author" content="Your Name" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 
     <script type="text/javascript" src="scripts/jquery-1.8.1.js"></script>
     <script type="text/javascript" src="jqwidgets/jqxcore.js"></script>
@@ -39,6 +40,22 @@
     <script type="text/javascript" src="jqwidgets/jqxpanel.js"></script>
     <script type="text/javascript" src="jqwidgets/jqxtree.js"></script>
     <script type="text/javascript" src="jqwidgets/jqxcheckbox.js"></script>
+
+    <link rel="stylesheet" href="css/style.css" type="text/css" media="screen, projection">
+    <script type="text/javascript" src="javaScript/jquery-1.4.2.min.js">
+    </script>
+    <script type="text/javascript" src="javaScript/scripts.js">
+    </script>
+
+    <style type="text/css">
+        .row { vertical-align: top; height:auto !important; }
+        .list {display:none; }
+        .show {display: none; }
+        .hide:target + .show {display: inline; }
+        .hide:target {display: none; }
+        .hide:target ~ .list {display:inline; }
+        @media print { .hide, .show { display: none; } }
+    </style>
 
     <!--    <link rel="stylesheet" href="jqwidgets/styles/jqx.base.css" type="text/css" />-->
 
@@ -110,6 +127,7 @@
 
     <%@page import="java.util.List"%>
     <%@page import="java.util.Iterator"%>
+    <%@ page import="org.karsha.entities.FiboTerm" %>
 
     <%
         //Showing message that data is success full aster full markup cycle
@@ -156,53 +174,53 @@
 
         <h2>Find Similar Documents (FIBO based)</h2>
         <h3>FIBO Terms (Tick Terms To Search)</h3>
+
         <table border="0" cellspacing="2">
             <tbody>
             <tr>
                 <form method="post" action="getsimilardocuments">
 
                     <td>
-                        <ul class="treeview" id="tree">
-
-                            <li class="expandable">
-                                <div class="hitarea expandable-hitarea"></div>
-                                <span><text name = "AAA">aaaa</text></span>
-                                <ul style="display: none;">
-
-                                    <li class="expandable">
-                                        <div class="hitarea expandable-hitarea"></div>
-                                        <span><text name ="BBBB">bbb</text></span>
-                                        <ul style="display: none;">
-                                            <li>111
-                                            </li>
-                                            <li>222
-                                            </li>
-                                            <li>333
-                                            </li>
-                                            <li class="last">444
-                                            </li>
-                                        </ul>
-                                    </li>
-                                </ul>
-                            </li>
-                        </ul>
-
-                                    <script>
+                        <div id="listContainer">
+                            <div class="listControl">
+                                <a id="expandList">Expand All</a>
+                                <a id="collapseList">Collapse All</a>
+                                <input type="submit" value="Search" name="search" />
+                            </div>
+                            <ul id="expList">
+                                <li>
+                                    FIBO TERMS
+                                    <ul>
+                                        <li>
+                                            <%
+                                                ArrayList<FiboTerm> fiboList = (ArrayList<FiboTerm>) session.getAttribute("fiboList");
+                                                for (int i = 0; i < fiboList.size(); i++) {
+                                            %>
+                                            <input id="checkBox" type="checkbox" value="<%=fiboList.get(i).getFiboTerm()%>"><%=fiboList.get(i).getFiboTerm()%></br>
+                                            <%
+                                                }
+                                            %>
+                                        </li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </div>
+                        <script>
                             <%
                                 String selectedItem;
-                                if (request.getAttribute("selectedDocumentName") != null) {
-                                    selectedItem = request.getAttribute("selectedDocumentName").toString();
+                                if (request.getAttribute("selectedFiboTerms") != null) {
+                                    selectedItem = request.getAttribute("selectedFiboTerms").toString();
                             %>
-                            document.getElementById('document_name').value = <%=selectedItem%>;
+                            document.getElementById('fibo_term').value = <%=selectedItem%>;
                             <%
                                 }
                             %>
                         </script>
-
-
-                    </td>
-                    <td>
-                        <input type="submit" value="Search" name="search" />
+                        <script>
+                            var $checks = $(".expList").change(function () { //for each checkbox
+                                $checks.filter(':checked')
+                            });
+                        </script>
                     </td>
                 </form>
             </tr>
@@ -255,7 +273,7 @@
 <div class="clearingdiv">&nbsp;</div>
 
 <div id="footer">
-    <p>&copy; 2012 <a href="www.opensource.lk">Lanka Software Foundation</a></p>
+    <p>&copy; 2013 <a href="www.opensource.lk">Lanka Software Foundation</a></p>
 </div>
 
 </div>
