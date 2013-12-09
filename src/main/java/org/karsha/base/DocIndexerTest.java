@@ -441,6 +441,7 @@ public class DocIndexerTest {
     public HashMap<Integer,TreeMap> getSimilarDocs(int noOfDocSections, String[] selectedDocuments, double okapiCutOff)  throws IOException, CorruptIndexException, ParseException, ClassNotFoundException, Exception {
         int noOfDocs = docNames.length;
         float tfIdfScore[][] = new float[noOfDocs][];
+        index();
         HashMap<Integer, HashMap> scoreMap = new HashMap<Integer, HashMap>();
         int weight = 1;   //
         scoreMap = getTfForDocs(noOfDocs, weight);

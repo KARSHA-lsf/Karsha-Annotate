@@ -55,14 +55,13 @@ public class SemanticSearchServlet extends HttpServlet {
         String url = null;
         String[] selectedFibos;
         selectedFibos = request.getParameterValues("fiboterms");
-        /*for(int i=0;i<selectedFibos.length;i++){
-        System.out.println(selectedFibos[i]);
-        }*/
+        HashMap<Integer,Double> docSim= new HashMap<Integer, Double>();
+
         HashMap<Integer, TreeMap> topKDocs = new HashMap<Integer, TreeMap>();
         int noOfFiboTerms=selectedFibos.length;
 
-            if(userPath.equals("/getsimilardocs")) {
-                System.out.println("noOfFiboTerms"+noOfFiboTerms);
+        if(userPath.equals("/getsimilardocs")) {
+            System.out.println("noOfFiboTerms"+noOfFiboTerms);
             int noOfDocSecs = 0;
             int noOfDocs = 0;
             ArrayList<Integer> Docids = DocumentDB.getAlldocumentIDs();
@@ -111,17 +110,33 @@ public class SemanticSearchServlet extends HttpServlet {
 
             int noOfDocuments= DocumentDB.getAllDocuments().size();
             try {
+                double avgSimScore;
+                int counter;
                 topKDocs = docInd.getSimilarDocs( noOfDocuments, docIds, 0);
+                for (Map.Entry entryParent: topKDocs.entrySet()){
+                    counter=0;
+                    avgSimScore=0;
+                    String docID =entryParent.toString();
+                    System.out.println("docID"+Integer.parseInt(docID));
+                    TreeMap<String, Double> sortedMap = (TreeMap<String, Double>) entryParent.getValue();
+
+                    for (Map.Entry entryChild : sortedMap.entrySet()) {
+                        double SimScore=(Double) entryChild.getValue();
+                        System.out.println("avgSimScore"+avgSimScore/counter);
+                        avgSimScore = avgSimScore + SimScore;
+                        counter++;
+                    }
+                    docSim.put(Integer.parseInt(docID),avgSimScore/counter);
+                }
             }  catch (Exception e){
 
             }
 
-            session.setAttribute("topKDocs", topKDocs);
-                session.setAttribute("topKDocs", topKDocs);
-                url = "/WEB-INF/view/semanticSearch.jsp";
-            }
+            session.setAttribute("topKDocs", docSim);
+            url = "/WEB-INF/view/semanticSearch.jsp";
+        }
 
-        request.setAttribute("topKDocs", topKDocs);
+        request.setAttribute("topKDocs", docSim);
         RequestDispatcher dispatcher =getServletContext().getRequestDispatcher(url);
         dispatcher.forward(request, response);
 

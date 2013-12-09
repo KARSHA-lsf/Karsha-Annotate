@@ -259,13 +259,11 @@
                             <tbody>
 
                             <%
-                                HashMap<Integer,TreeMap> topKDocs = (HashMap<Integer,TreeMap>)session.getAttribute("topKDocs");
+                                HashMap<Integer,Double> topKDocs = (HashMap<Integer,Double>)session.getAttribute("topKDocs");
 
-                                for (Map.Entry keyval: topKDocs.entrySet()){
-                                    String docID =keyval.toString();
-                                    TreeMap<String, Double> sortedMap = (TreeMap<String, Double>) keyval.getValue();
-                                    for (Map.Entry entryChild : sortedMap.entrySet()) {
-                                       double SimScore=(Double) entryChild.getValue();
+                                for (Map.Entry entryParent: topKDocs.entrySet()){
+                                    String docID =entryParent.getKey().toString();
+                                    double SimScore=(Double) entryParent.getValue();
 
                             %>
                             <tr>
@@ -275,7 +273,6 @@
                             </tr>
 
                             <%
-                                    }
                                 }
 
                             %>
