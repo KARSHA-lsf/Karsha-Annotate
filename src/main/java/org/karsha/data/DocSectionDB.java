@@ -40,7 +40,7 @@ import org.karsha.entities.Document;
 public class DocSectionDB {
     
   
-    public static ArrayList<DocSection> getAllDocumentsByCollectionId(int documentId) {
+    public static ArrayList<DocSection> getAllDocSectionsbyDocId(int documentId) {
          ConnectionPool pool = ConnectionPool.getInstance();
         Connection connection = pool.getConnection();
         PreparedStatement ps = null;
@@ -95,15 +95,15 @@ public class DocSectionDB {
             ps = connection.prepareStatement(query);
             ps.setInt(1, secId);
             rs = ps.executeQuery();
-           
-            rs.next();
             DocSection d = new DocSection();
+            while(rs.next()){
+           
             d.setSectionName(rs.getString("SectionName").replaceAll("[\";\',.%$]()", " ").trim());
             d.setSectionId(secId);
             d.setParentDocId(rs.getInt("DocId"));
             blob = rs.getBlob("SectionFile");
             d.setSectionContent(blob.getBytes((long) 1, (int) blob.length()));
-            
+            }
             return d;
             
         }

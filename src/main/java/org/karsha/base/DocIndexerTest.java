@@ -21,6 +21,9 @@ package org.karsha.base;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
@@ -30,6 +33,9 @@ import org.apache.lucene.search.DefaultSimilarity;
 import org.apache.lucene.store.NIOFSDirectory;
 import org.apache.lucene.store.RAMDirectory;
 import org.apache.lucene.util.Version;
+import org.karsha.data.DocSectionDB;
+import org.karsha.data.DocumentDB;
+import org.karsha.data.FiboDB;
 import org.karsha.tokenize.DefaultTokenizer;
 import org.apache.lucene.store.RAMFile;
 /**
@@ -61,7 +67,8 @@ public class DocIndexerTest {
      * need RAM directory because Wso2-Stratoes Server that we used to host
      * dosen't allow access local files
      *
-     * @param files- List of Documents converted in to bytes
+     * @param
+     * //files- List of Documents converted in to bytes
      * @param docNames -Corresponding Document names
      */
     public DocIndexerTest(String docContent[], String docNames[]) {
@@ -189,7 +196,7 @@ public class DocIndexerTest {
         }
     }
 
-    //---------------------------Okapi Testing-------------------------------------------------------------------
+    //---------------------------Okapi Testing term freq-------------------------------------------------------------------
     public HashMap<Integer, HashMap> getTfForDocs(int numberOfDocs, int weight) throws CorruptIndexException, ParseException {
 
         int noOfDocs = numberOfDocs;
@@ -430,5 +437,53 @@ public class DocIndexerTest {
         return topKTerms;
 
 
+    }
+    public HashMap<Integer,TreeMap> getSimilarDocs(int noOfDocSections, String[] selectedDocuments, double okapiCutOff)  throws IOException, CorruptIndexException, ParseException, ClassNotFoundException, Exception {
+        int noOfDocs = docNames.length;
+        float tfIdfScore[][] = new float[noOfDocs][];
+        HashMap<Integer, HashMap> scoreMap = new HashMap<Integer, HashMap>();
+        int weight = 1;   //
+        scoreMap = getTfForDocs(noOfDocs, weight);
+        ArrayList<Double> simi = new ArrayList<Double>();
+        OkapiSimilarity okapiSim = new OkapiSimilarity(ramMemDir);
+        HashMap<Integer, TreeMap> topKTerms = new HashMap<Integer, TreeMap>();
+        for (int p = 0; p < noOfDocSections; p++) {
+            int noOfFiles;
+            Double db[] = new Double[noOfDocs];
+            double sim[];
+            HashMap<String, Double> termsScore = new HashMap<String, Double>();
+            try {
+                db = okapiSim.computeSimilarity(scoreMap, p);
+                simi.addAll(Arrays.asList(db));
+
+                int aa = 0;
+                //Printing the similarity values
+                for (int i = noOfDocSections; i < simi.size(); i++) {
+                    aa++;
+                    double temp = simi.get(i);
+                    if (!Double.isNaN(temp) && temp > okapiCutOff) {
+                        termsScore.put(docNames[i], temp);
+                    }
+                }
+                ValueComparator bvc = new ValueComparator(termsScore);
+                SortedMap<String, Double> sorted_map = Collections.synchronizedSortedMap(new TreeMap<String, Double>(bvc));
+                sorted_map.putAll(termsScore);
+                int count = 0;
+                Iterator it = sorted_map.entrySet().iterator();
+                while (it.hasNext()) {
+                    it.next();
+                    count++;
+                    if (count > 14) {
+                        it.remove();
+                    }
+                }
+                topKTerms.put(Integer.parseInt(selectedDocuments[p]), new TreeMap<String, Double>(sorted_map));
+            } catch (IOException e) {
+                sim = null;
+                e.printStackTrace();
+            }
+            simi.clear();
+        }
+        return topKTerms;
     }
 }
