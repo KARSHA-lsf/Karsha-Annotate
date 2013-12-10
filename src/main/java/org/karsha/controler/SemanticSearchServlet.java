@@ -110,24 +110,26 @@ public class SemanticSearchServlet extends HttpServlet {
                 double avgSimScore;
                 int counter;
 
-                System.out.println("!!!!!");
+             //   System.out.println("!!!!!");
                 topKDocs = docInd.getSimilarDocs( noOfDocuments, docIds, 0);
                 for (Map.Entry entryParent: topKDocs.entrySet()){
                     counter=0;
                     avgSimScore=0;
                     String docID =entryParent.getKey().toString();
-                    System.out.println("docID"+Integer.parseInt(docID));
+                //    System.out.println("docID"+Integer.parseInt(docID));
                     TreeMap<String, Double> sortedMap = (TreeMap<String, Double>) entryParent.getValue();
 
                     for (Map.Entry entryChild : sortedMap.entrySet()) {
                         double SimScore=(Double) entryChild.getValue();
-                        System.out.println("avgSimScore"+avgSimScore/counter);
+                //        System.out.println("avgSimScore"+avgSimScore/counter);
                         avgSimScore = avgSimScore + SimScore;
                         counter++;
                     }
                     docSim.put(Integer.parseInt(docID),avgSimScore/counter);
+
                 }
                 docSimMap = sortHashMapByValues(docSim);
+
             }  catch (Exception e){
                 System.out.println(e);
             }
@@ -144,7 +146,9 @@ public class SemanticSearchServlet extends HttpServlet {
         List mapKeys = new ArrayList(hashMap.keySet());
         List mapValues = new ArrayList(hashMap.values());
         Collections.sort(mapValues);
+        Collections.reverse(mapValues);
         Collections.sort(mapKeys);
+        Collections.reverse(mapKeys);
 
         LinkedHashMap sortedMap = new LinkedHashMap();
 
@@ -164,9 +168,7 @@ public class SemanticSearchServlet extends HttpServlet {
                     sortedMap.put(key, (Double)val);
                     break;
                 }
-
             }
-
         }
         return sortedMap;
     }
