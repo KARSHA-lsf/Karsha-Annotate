@@ -16,10 +16,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -56,7 +53,7 @@ public class SemanticSearchServlet extends HttpServlet {
         String[] selectedFibos;
         selectedFibos = request.getParameterValues("fiboterms");
         HashMap<Integer,Double> docSim= new HashMap<Integer, Double>();
-
+        LinkedHashMap<String,Integer> docSimMap = new LinkedHashMap<String, Integer>();
         HashMap<Integer, TreeMap> topKDocs = new HashMap<Integer, TreeMap>();
         int noOfFiboTerms=selectedFibos.length;
 
@@ -112,11 +109,13 @@ public class SemanticSearchServlet extends HttpServlet {
             try {
                 double avgSimScore;
                 int counter;
+
+                System.out.println("!!!!!");
                 topKDocs = docInd.getSimilarDocs( noOfDocuments, docIds, 0);
                 for (Map.Entry entryParent: topKDocs.entrySet()){
                     counter=0;
                     avgSimScore=0;
-                    String docID =entryParent.toString();
+                    String docID =entryParent.getKey().toString();
                     System.out.println("docID"+Integer.parseInt(docID));
                     TreeMap<String, Double> sortedMap = (TreeMap<String, Double>) entryParent.getValue();
 
@@ -128,17 +127,47 @@ public class SemanticSearchServlet extends HttpServlet {
                     }
                     docSim.put(Integer.parseInt(docID),avgSimScore/counter);
                 }
+                docSimMap = sortHashMapByValues(docSim);
             }  catch (Exception e){
-
+                System.out.println(e);
             }
-
-            session.setAttribute("topKDocs", docSim);
+            session.setAttribute("topKDocs", docSimMap);
             url = "/WEB-INF/view/semanticSearch.jsp";
         }
 
-        request.setAttribute("topKDocs", docSim);
+        request.setAttribute("topKDocs", docSimMap);
         RequestDispatcher dispatcher =getServletContext().getRequestDispatcher(url);
         dispatcher.forward(request, response);
 
+    }
+    public LinkedHashMap sortHashMapByValues(HashMap hashMap) {
+        List mapKeys = new ArrayList(hashMap.keySet());
+        List mapValues = new ArrayList(hashMap.values());
+        Collections.sort(mapValues);
+        Collections.sort(mapKeys);
+
+        LinkedHashMap sortedMap = new LinkedHashMap();
+
+        Iterator valueIt = mapValues.iterator();
+        while (valueIt.hasNext()) {
+            Object val = valueIt.next();
+            Iterator keyIt = mapKeys.iterator();
+
+            while (keyIt.hasNext()) {
+                Object key = keyIt.next();
+                String comp1 = hashMap.get(key).toString();
+                String comp2 = val.toString();
+
+                if (comp1.equals(comp2)){
+                    hashMap.remove(key);
+                    mapKeys.remove(key);
+                    sortedMap.put(key, (Double)val);
+                    break;
+                }
+
+            }
+
+        }
+        return sortedMap;
     }
 }
