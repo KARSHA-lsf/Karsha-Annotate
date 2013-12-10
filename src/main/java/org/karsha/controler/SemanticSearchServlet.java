@@ -165,7 +165,7 @@ public class SemanticSearchServlet extends HttpServlet {
                 if (comp1.equals(comp2)){
                     hashMap.remove(key);
                     mapKeys.remove(key);
-                    sortedMap.put(key, (Double)val);
+                    sortedMap.put(key, Math.round((Double)val*100.0)/100.0);
                     break;
                 }
             }

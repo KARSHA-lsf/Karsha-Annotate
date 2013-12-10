@@ -257,11 +257,16 @@
                         <br/>
                         <table class="gridtable" width="100%">
                             <tbody>
+                            <tr>
+                                <td><b> DocID </b></td>
+                                <td><b> SimScore </b></td>
 
+                            </tr>
                             <%
                                 HashMap<Integer,Double> topKDocs = (HashMap<Integer,Double>)session.getAttribute("topKDocs");
 
                                 for (Map.Entry entryParent: topKDocs.entrySet()){
+                                    if((Double) entryParent.getValue()!=0.0){
                                     String docID =entryParent.getKey().toString();
                                     double SimScore=(Double) entryParent.getValue();
 
@@ -273,6 +278,7 @@
                             </tr>
 
                             <%
+                                    }
                                 }
 
                             %>
