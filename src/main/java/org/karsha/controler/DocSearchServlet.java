@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.ArrayList;
+import org.karsha.base.GetSimilarDocuments;
 
 /**
  * Created with IntelliJ IDEA.
@@ -49,6 +50,9 @@ public class DocSearchServlet extends HttpServlet {
 
             ArrayList<Document> documentList = DocumentDB.getSimilarDocuments();
             session.setAttribute("documentList", documentList);
+            
+            ArrayList<Document> similarDocumentList = GetSimilarDocuments.getSimilarDocumentsForADocument(selectedDocumentName);
+            session.setAttribute("similarDocumentList", similarDocumentList);
             url = "/WEB-INF/view/docsearch.jsp";
 
         }

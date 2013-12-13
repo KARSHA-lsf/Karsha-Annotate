@@ -474,4 +474,46 @@ String query = "Select DocId from document where Name = ?";
         }
     }
     
+    public static ArrayList<Integer> getAlldocumentIDs(){
+        ConnectionPool pool = ConnectionPool.getInstance();
+        Connection connection = pool.getConnection();
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        ArrayList<Integer> docIDs = new ArrayList<Integer>();
+        int doc = 0;
+        
+        
+        String query = "Select DocId from document";
+        
+        
+        try
+        {
+            ps = connection.prepareStatement(query);
+            //ps.setString(1, name.replaceAll("[\";\',.%$]()", " ").trim());
+            rs = ps.executeQuery();
+           
+            while(rs.next()){
+                
+                doc = rs.getInt("DocId");
+               // System.out.println(doc);
+                docIDs.add(doc);
+               
+            }
+            return docIDs;
+            
+        }
+        catch(SQLException e)
+        {
+            e.printStackTrace();
+            return null;
+        }
+        finally
+        {
+            DBUtil.closeResultSet(rs);
+            DBUtil.closePreparedStatement(ps);
+            pool.freeConnection(connection);
+        }       
+    
+    }
+    
 }

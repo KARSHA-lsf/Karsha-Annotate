@@ -271,7 +271,7 @@ public class DocIndexerTest {
         return tfMap;
     }
 
-    public HashMap<Integer, TreeMap> topKFiboTerms(int noOfDocSections, String[] selectedDocuments, double okapiCutOff) throws IOException, CorruptIndexException, ParseException, ClassNotFoundException, Exception {
+    public HashMap<Integer, TreeMap> topKFiboTerms(int docIndex, String[] selectedDocuments, double okapiCutOff) throws IOException, CorruptIndexException, ParseException, ClassNotFoundException, Exception {
         int noOfDocs = docNames.length;
         float tfIdfScore[][] = new float[noOfDocs][];
 
@@ -337,7 +337,8 @@ public class DocIndexerTest {
 
 
 
-        for (int p = 0; p < noOfDocSections; p++) {
+        //for (int p = 0; p < noOfDocSections; p++) {
+        for (int p = 0; p < 1; p++) {
             /////////////////////////////////////////////////////////
             int noOfFiles;
 
@@ -362,12 +363,13 @@ public class DocIndexerTest {
                 //sim = doc.consineSimilarityTo(0);
                 //sim=docInd.consineSimilarityTo(0);
                 // simi = docInd.consineSimilarityTo2(p);
-                db = okapiSim.computeSimilarity(scoreMap, p);
+                db = okapiSim.computeSimilarity(scoreMap, docIndex);
                 simi.addAll(Arrays.asList(db));
 
                 int aa = 0;
                 //Printing the similarity values
-                for (int i = noOfDocSections; i < simi.size(); i++) {
+                //for (int i = noOfDocSections; i < simi.size(); i++) {
+                for (int i = 0 ; i < simi.size(); i++) {
                     aa++;
                     double temp = simi.get(i);
 //
@@ -414,7 +416,7 @@ public class DocIndexerTest {
 
 
 
-                topKTerms.put(Integer.parseInt(selectedDocuments[p]), new TreeMap<String, Double>(sorted_map));
+                topKTerms.put(Integer.parseInt(selectedDocuments[docIndex]), new TreeMap<String, Double>(sorted_map));
 //tempSortedMap.clear();
 
             } catch (IOException e) {

@@ -58,8 +58,8 @@ public class ConnectionPool {
     //      String password = "admin@lsf";     
            
       String url = "jdbc:mysql://localhost:3306/karshaannotate";      
-            String username = "karsha";
-          String password = "karsha";
+            String username = "karshaa";
+          String password = "karshaa";
             
             /*Credentials for UMIACS server */ 
 //         String url = "jdbc:mysql://localhost:3306/karshaannotate";      

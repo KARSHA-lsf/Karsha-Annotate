@@ -133,7 +133,7 @@ public class SelectSectionServelet extends HttpServlet {
                 // String result; = temp.replaceAll("[\";()\'$ %,]","");
                 for (int i = 0; i < n; i++) {
 
-                    docSec = DocSectionDB.getAllDocumentsByCollectionId(Integer.parseInt(docs[i]));
+                    docSec = DocSectionDB.getFullDocumentByDocumentId(Integer.parseInt(docs[i]));
                     tempDoc = DocumentDB.getDocumentByDocId(Integer.parseInt(docs[i]));
                     selectedDoc.add(tempDoc);
                     docSectionMap.put(tempDoc.getDocumentName(), docSec);

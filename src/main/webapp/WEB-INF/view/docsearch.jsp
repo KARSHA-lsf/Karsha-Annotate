@@ -246,7 +246,7 @@
                         <tbody>
 
                         <%
-                            ArrayList<Document> documentList = (ArrayList<Document>) session.getAttribute("documentList");
+                            ArrayList<Document> documentList = (ArrayList<Document>) session.getAttribute("similarDocumentList");
                             for (int i = 0; i < documentList.size(); i++) {
                         %>
                         <tr>
