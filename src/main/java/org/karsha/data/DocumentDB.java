@@ -550,7 +550,7 @@ String query = "Select DocId from document where Name = ?";
     }
 
     
-    public static ArrayList<Integer> getAlldocumentIDs(){
+    /*public static ArrayList<Integer> getAlldocumentIDs(){
         ConnectionPool pool = ConnectionPool.getInstance();
         Connection connection = pool.getConnection();
         PreparedStatement ps = null;
@@ -590,6 +590,6 @@ String query = "Select DocId from document where Name = ?";
             pool.freeConnection(connection);
         }       
     
-    }
+    }*/
     
 }

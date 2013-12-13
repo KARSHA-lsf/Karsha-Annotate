@@ -39,7 +39,7 @@ public class GetSimilarDocuments {
 
             for (int i = 0; i < noOfDocs; i++) {
 
-                docSec = DocSectionDB.getFullDocumentByDocumentId(Docids.get(i));
+                docSec = DocSectionDB.getAllDocSectionsbyDocId(Docids.get(i));
                 tempDoc = DocumentDB.getDocumentByDocId(Docids.get(i));
 
                 SelectedDocSectionMap.put(tempDoc.getDocumentName(), docSec);

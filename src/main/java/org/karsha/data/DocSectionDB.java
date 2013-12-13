@@ -39,12 +39,8 @@ import org.karsha.entities.Document;
  */
 public class DocSectionDB {
     
-  
-<<<<<<< HEAD
-    public static ArrayList<DocSection> getFullDocumentByDocumentId(int documentId) {
-=======
+
     public static ArrayList<DocSection> getAllDocSectionsbyDocId(int documentId) {
->>>>>>> 317acbe600390bc285f7f9531cb5dd5bcff7a4ce
          ConnectionPool pool = ConnectionPool.getInstance();
         Connection connection = pool.getConnection();
         PreparedStatement ps = null;
