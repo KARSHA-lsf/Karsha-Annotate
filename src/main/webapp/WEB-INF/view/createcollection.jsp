@@ -240,6 +240,15 @@
                                     <td>
                                         <input type="submit" value="Get Documents" name="getdocuments" />
                                     </td>
+                                        <%
+                                            List<String> a = (List<String>)session.getAttribute("roots");
+                                            for(int i=0;i<a.size();i++){
+                                                String x = a.get(i);
+                                                %>
+                                    <td><%=x%></td>
+                                    <%
+                                            }
+                                        %>
                                 </form>
                             </tr>
 

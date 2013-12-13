@@ -190,6 +190,40 @@ public class DocumentDB {
             pool.freeConnection(connection);
         }
     }
+    //returns top k documents according to the selected fibo terms
+    public static ArrayList<Document> getSimilarDocs(String[] selectedFibos){
+
+        ConnectionPool pool = ConnectionPool.getInstance();
+        Connection connection = pool.getConnection();
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        int NumberofSelectedFibos = selectedFibos.length;
+        ArrayList<Document> documentList = new ArrayList<Document>();
+
+        for(int i=0; i<selectedFibos.length; i++){
+            String query = "select DocId,SimilarityValue from matchDocFibo where FiboId="+selectedFibos[i]+";";
+            try {
+                ps = connection.prepareStatement(query);
+                rs = ps.executeQuery();
+
+            while (rs.next())
+            {
+                Document d = new Document();
+                d.setDocId(Integer.parseInt(rs.getString("DocId")));
+                d.setDocumentName(rs.getString("Name").replaceAll("[\";\',.%$]()", " ").trim());
+
+                documentList.add(d);
+            }
+            } catch (Exception e) {
+                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            }
+
+            DBUtil.closeResultSet(rs);
+            DBUtil.closePreparedStatement(ps);
+            pool.freeConnection(connection);
+        }
+        return documentList;
+    }
     public static int insert(Document newDocument) {
         
         ConnectionPool pool = ConnectionPool.getInstance();
@@ -473,6 +507,48 @@ String query = "Select DocId from document where Name = ?";
             pool.freeConnection(connection);
         }
     }
+    public static ArrayList<Integer> getAlldocumentIDs(){
+        ConnectionPool pool = ConnectionPool.getInstance();
+        Connection connection = pool.getConnection();
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        ArrayList<Integer> docIDs = new ArrayList<Integer>();
+        int doc = 0;
+
+
+        String query = "Select DocId from document";
+
+
+        try
+        {
+            ps = connection.prepareStatement(query);
+            //ps.setString(1, name.replaceAll("[\";\',.%$]()", " ").trim());
+            rs = ps.executeQuery();
+
+            while(rs.next()){
+
+                doc = rs.getInt("DocId");
+                // System.out.println(doc);
+                docIDs.add(doc);
+
+            }
+            return docIDs;
+
+        }
+        catch(SQLException e)
+        {
+            e.printStackTrace();
+            return null;
+        }
+        finally
+        {
+            DBUtil.closeResultSet(rs);
+            DBUtil.closePreparedStatement(ps);
+            pool.freeConnection(connection);
+        }
+
+    }
+
     
     public static ArrayList<Integer> getAlldocumentIDs(){
         ConnectionPool pool = ConnectionPool.getInstance();

@@ -21,17 +21,16 @@
 --%>
 <%@page import="org.karsha.entities.Document"%>
 <%@page import="org.karsha.entities.CollectionType"%>
-<%@page import="java.util.ArrayList"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
 
 
-    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-    <meta name="description" content="Your description goes here" />
-    <meta name="keywords" content="your,keywords,goes,here" />
-    <meta name="author" content="Your Name" />
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <meta name="description" content="Your description goes here"/>
+    <meta name="keywords" content="your,keywords,goes,here"/>
+    <meta name="author" content="Your Name"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 
     <script type="text/javascript" src="scripts/jquery-1.8.1.js"></script>
     <script type="text/javascript" src="jqwidgets/jqxcore.js"></script>
@@ -48,24 +47,55 @@
     </script>
 
     <style type="text/css">
-        .row { vertical-align: top; height:auto !important; }
-        .list {display:none; }
-        .show {display: none; }
-        .hide:target + .show {display: inline; }
-        .hide:target {display: none; }
-        .hide:target ~ .list {display:inline; }
-        @media print { .hide, .show { display: none; } }
+        .row {
+            vertical-align: top;
+            height: auto !important;
+        }
+
+        .list {
+            display: none;
+        }
+
+        .show {
+            display: none;
+        }
+
+        .hide:target + .show {
+            display: inline;
+        }
+
+        .hide:target {
+            display: none;
+        }
+
+        .hide:target ~ .list {
+            display: inline;
+        }
+
+        @media print {
+            .hide, .show {
+                display: none;
+            }
+        }
     </style>
 
     <!--    <link rel="stylesheet" href="jqwidgets/styles/jqx.base.css" type="text/css" />-->
 
-    <link rel="stylesheet" type="text/css" href="css/karshamarkup.css"  media="screen,projection" />
+    <link rel="stylesheet" type="text/css" href="css/karshamarkup.css" media="screen,projection"/>
 
     <style type="text/css">
             /* This is only a demonstration of the included colors in the andreas09 template. Don't use this file as a starting point when you use the template, use the included index.html or 2col.html instead! */
-        #container{background:#f0f0f0 url(images/bodybg-black.jpg) repeat-x;}
-        #mainmenu a:hover{background:#f0f0f0 url(images/menuhover-black.jpg) top left repeat-x;}
-        #mainmenu a.current{background:#f0f0f0 url(images/menuhover-black.jpg) top left repeat-x;}
+        #container {
+            background: #f0f0f0 url(images/bodybg-black.jpg) repeat-x;
+        }
+
+        #mainmenu a:hover {
+            background: #f0f0f0 url(images/menuhover-black.jpg) top left repeat-x;
+        }
+
+        #mainmenu a.current {
+            background: #f0f0f0 url(images/menuhover-black.jpg) top left repeat-x;
+        }
     </style>
     <title>Karsha Annotation Tool </title>
 </head>
@@ -73,11 +103,12 @@
 <body>
 
 <div id="container">
-<div id="sitename">
-    <h1>Karsha</h1>
-    <h2>Annotation Tool</h2>
+    <div id="sitename">
+        <h1>Karsha</h1>
 
-    <%
+        <h2>Annotation Tool</h2>
+
+        <%
         String userLogin = (String) session.getAttribute("username");
         if (userLogin != null) {
     %>
@@ -89,47 +120,48 @@
     %>
 
 
-</div>
-<div id="mainmenu">
-    <ul>
-        <li><a href="index.html">Karsha</a></li>
+    </div>
+    <div id="mainmenu">
+        <ul>
+            <li><a href="index.html">Karsha</a></li>
 
-    </ul>
-</div>
+        </ul>
+    </div>
 
-<div id="wrap">
-    <div id="leftside">
+    <div id="wrap">
+        <div id="leftside">
 
-        <p>
-            <a class="nav" href="uploaddocuments">Admin</a>
-            <a class="nav sub" href="uploaddocuments">Upload Doc</a>
-            <a class="nav sub" href="newuser">User Management</a>
+            <p>
+                <a class="nav" href="uploaddocuments">Admin</a>
+                <a class="nav sub" href="uploaddocuments">Upload Doc</a>
+                <a class="nav sub" href="newuser">User Management</a>
 
-        </p>
+            </p>
 
-        <p>
-            <a class="nav" href="createcollection">Annotate</a>
-        </p>
-        <p>
-            <a class="nav" href="createdoccollection">Doc Section MarkUp</a>
-        </p>
-        <p>
-            <a class="nav">Search</a>
-            <a class="nav sub" href="docsearch">Document Similarity</a>
-            <a class="nav sub" href="semanticSearch">Semantic Similarity</a>
-        </p>
+            <p>
+                <a class="nav" href="createcollection">Annotate</a>
+            </p>
+
+            <p>
+                <a class="nav" href="createdoccollection">Doc Section MarkUp</a>
+            </p>
+
+            <p>
+                <a class="nav">Search</a>
+                <a class="nav sub" href="docsearch">Document Similarity</a>
+                <a class="nav sub" href="semanticSearch">Semantic Similarity</a>
+            </p>
+
+        </div>
 
     </div>
 
-</div>
+    <div id="content" style="height:auto; min-height: 800px">
 
-<div id="content"  style="height:auto; min-height: 800px">
+        <%@ page import="org.karsha.entities.FiboTerm" %>
+        <%@ page import="java.util.*" %>
 
-    <%@page import="java.util.List"%>
-    <%@page import="java.util.Iterator"%>
-    <%@ page import="org.karsha.entities.FiboTerm" %>
-
-    <%
+        <%
         //Showing message that data is success full aster full markup cycle
 
         String savesucces = (String) session.getAttribute("savesucces");
@@ -178,7 +210,7 @@
         <table border="0" cellspacing="2">
             <tbody>
             <tr>
-                <form method="post" action="getsimilardocuments">
+                <form method="post" action="getsimilardocs">
 
                     <td>
                         <div id="listContainer">
@@ -196,7 +228,7 @@
                                                 ArrayList<FiboTerm> fiboList = (ArrayList<FiboTerm>) session.getAttribute("fiboList");
                                                 for (int i = 0; i < fiboList.size(); i++) {
                                             %>
-                                            <input id="checkBox" type="checkbox" value="<%=fiboList.get(i).getFiboTerm()%>"><%=fiboList.get(i).getFiboTerm()%></br>
+                                            <input id="checkBox" type="checkbox" value="<%=fiboList.get(i).getFiboId()%>" name="fiboterms"><%=fiboList.get(i).getFiboTerm()%></br>
                                             <%
                                                 }
                                             %>
@@ -205,17 +237,6 @@
                                 </li>
                             </ul>
                         </div>
-                        <script>
-                            <%
-                                String selectedItem;
-                                if (request.getAttribute("selectedFiboTerms") != null) {
-                                    selectedItem = request.getAttribute("selectedFiboTerms").toString();
-                            %>
-                            document.getElementById('fibo_term').value = <%=selectedItem%>;
-                            <%
-                                }
-                            %>
-                        </script>
                         <script>
                             var $checks = $(".expList").change(function () { //for each checkbox
                                 $checks.filter(':checked')
@@ -228,7 +249,7 @@
             <tr><td colspan="3">&nbsp;</td></tr>
 
 
-            <form name="docForm" method="post" action="selectSections" onsubmit="javascript:return validate();">
+            <form name="docForm" method="post" action="getsimilardocs">
                 <tr>
                     <td colspan="3">
                         <% if (request.getMethod().equals("POST")) {%>
@@ -236,17 +257,28 @@
                         <br/>
                         <table class="gridtable" width="100%">
                             <tbody>
+                            <tr>
+                                <td><b> DocID </b></td>
+                                <td><b> SimScore </b></td>
 
+                            </tr>
                             <%
-                                ArrayList<Document> documentList = (ArrayList<Document>) session.getAttribute("documentList");
-                                for (int i = 0; i < documentList.size(); i++) {
+                                HashMap<Integer,Double> topKDocs = (HashMap<Integer,Double>)session.getAttribute("topKDocs");
+
+                                for (Map.Entry entryParent: topKDocs.entrySet()){
+                                    if((Double) entryParent.getValue()!=0.0){
+                                    String docID =entryParent.getKey().toString();
+                                    double SimScore=(Double) entryParent.getValue();
+
                             %>
                             <tr>
-                                <td> <%=documentList.get(i).getDocumentName()%> </td>
+                                <td> <%=docID%> </td>
+                                <td> <%=SimScore%> </td>
 
                             </tr>
 
                             <%
+                                    }
                                 }
 
                             %>

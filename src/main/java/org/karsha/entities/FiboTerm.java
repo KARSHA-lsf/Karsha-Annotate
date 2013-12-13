@@ -28,7 +28,7 @@ import java.io.Serializable;
  */
 public class FiboTerm implements Serializable{
     
-     private int fiboId;
+    private int fiboId;
     private String fiboTerm;
     private String fiboDefinition;
     private int collectionID;

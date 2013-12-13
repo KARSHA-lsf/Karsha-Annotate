@@ -97,7 +97,11 @@ public class MarkUpDocSectionsServelet extends HttpServlet {
                   
                     for (int i = 0; i < n; i++) {
 
+
                         docSec = DocSectionDB.getFullDocumentByDocumentId(Integer.parseInt(docs[i]));
+
+                        docSec = DocSectionDB.getAllDocSectionsbyDocId(Integer.parseInt(docs[i]));
+
                         tempDoc = DocumentDB.getDocumentByDocId(Integer.parseInt(docs[i]));
                         selectedDoc.add(tempDoc);
                         SelectedDocSectionMap.put(tempDoc.getDocumentName(), docSec);

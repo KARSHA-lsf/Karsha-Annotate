@@ -1,6 +1,12 @@
 package org.karsha.controler;
 
+import org.karsha.base.DocIndexer;
+import org.karsha.base.DocIndexerTest;
+import org.karsha.data.DocSectionDB;
+import org.karsha.data.DocumentDB;
 import org.karsha.data.FiboDB;
+import org.karsha.entities.DocSection;
+import org.karsha.entities.Document;
 import org.karsha.entities.FiboTerm;
 
 import javax.servlet.RequestDispatcher;
@@ -10,7 +16,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Created with IntelliJ IDEA.
@@ -29,7 +37,10 @@ public class SemanticSearchServlet extends HttpServlet {
 
         if(userPath.equals("/semanticSearch")) {
             ArrayList<FiboTerm> fiboList = FiboDB.getAllFiboTerms();
+            MutableTree<String> tree= new MappedTreeStructure().getFiboTree();
             session.setAttribute("fiboList", fiboList);
+            List<String> roots = tree.getRoots();
+            session.setAttribute("roots", roots);
             url = "/WEB-INF/view/semanticSearch.jsp";
         }
 
@@ -42,18 +53,126 @@ public class SemanticSearchServlet extends HttpServlet {
         String userPath = request.getServletPath();
         HttpSession session = request.getSession();
         String url = null;
+        String[] selectedFibos;
+        selectedFibos = request.getParameterValues("fiboterms");
+        HashMap<Integer,Double> docSim= new HashMap<Integer, Double>();
+        LinkedHashMap<String,Integer> docSimMap = new LinkedHashMap<String, Integer>();
+        HashMap<Integer, TreeMap> topKDocs = new HashMap<Integer, TreeMap>();
+        int noOfFiboTerms=selectedFibos.length;
 
-        String selectedFiboTerms = (String)request.getParameter("fibo_term");
-        session.setAttribute("selectedFiboTerms", selectedFiboTerms);
         if(userPath.equals("/getsimilardocs")) {
+            System.out.println("noOfFiboTerms"+noOfFiboTerms);
+            int noOfDocSecs = 0;
+            int noOfDocs = 0;
+            ArrayList<Integer> Docids = DocumentDB.getAlldocumentIDs();
+            noOfDocs = Docids.size();
+            Document tempDoc = new Document();
+            ArrayList<DocSection> docSec = new ArrayList<DocSection>();
+            HashMap<String, ArrayList<DocSection>> SelectedDocSectionMap = new HashMap<String, ArrayList<DocSection>>();
 
-            ArrayList<FiboTerm> fiboList =FiboDB.getAllFiboTerms();
-            session.setAttribute("fiboList", fiboList);
+            for (int i = 0; i < noOfDocs; i++) {
+                docSec = DocSectionDB.getAllDocSectionsbyDocId(Docids.get(i));
+                noOfDocSecs = noOfDocSecs + docSec.size();
+                tempDoc = DocumentDB.getDocumentByDocId(Docids.get(i));
+                SelectedDocSectionMap.put(tempDoc.getDocumentName(), docSec);
+
+            }
+
+            String[] docContent = new String[noOfDocs+noOfFiboTerms];
+            String[] docNames = new String[noOfDocs+noOfFiboTerms];
+            String[] docIds = new String[noOfDocs];
+            int count = 0;
+
+            for ( Map.Entry entry : SelectedDocSectionMap.entrySet() ){
+                String doc = "";
+                docNames[count] = (String)entry.getKey();
+                ArrayList<DocSection> docSections = (ArrayList<DocSection>) entry.getValue();
+
+                for ( int i = 0; i < docSections.size(); i++ ){
+                    String sec = new String( DocSectionDB.getDocumentDataByDocId( docSections.get( i ).getSectionId() ).getSectiontContent() );
+                    doc = doc.concat(sec);
+                }
+                docContent[count] = doc;
+                count++;
+            }
+            /*
+            *CHANGE HERE
+             */
+            for ( int i = 0; i < Docids.size(); i++ ){
+                docIds[i] = Docids.get(i).toString();
+            }
+            for (int i = 0; i < noOfFiboTerms; i++) {
+                docContent[noOfDocs + i] = FiboDB.getFiboTermById(Integer.parseInt(selectedFibos[i])).getFiboTerm() + FiboDB.getFiboTermById(Integer.parseInt(selectedFibos[i])).getFiboDefinition();
+                docNames[noOfDocs + i] = selectedFibos[i];
+            }
+
+            DocIndexerTest docInd = new DocIndexerTest( docContent, docNames );
+
+            int noOfDocuments= DocumentDB.getAllDocuments().size();
+            try {
+                double avgSimScore;
+                int counter;
+
+             //   System.out.println("!!!!!");
+                topKDocs = docInd.getSimilarDocs( noOfDocuments, docIds, 0);
+                for (Map.Entry entryParent: topKDocs.entrySet()){
+                    counter=0;
+                    avgSimScore=0;
+                    String docID =entryParent.getKey().toString();
+                //    System.out.println("docID"+Integer.parseInt(docID));
+                    TreeMap<String, Double> sortedMap = (TreeMap<String, Double>) entryParent.getValue();
+
+                    for (Map.Entry entryChild : sortedMap.entrySet()) {
+                        double SimScore=(Double) entryChild.getValue();
+                //        System.out.println("avgSimScore"+avgSimScore/counter);
+                        avgSimScore = avgSimScore + SimScore;
+                        counter++;
+                    }
+                    docSim.put(Integer.parseInt(docID),avgSimScore/counter);
+
+                }
+                docSimMap = sortHashMapByValues(docSim);
+
+            }  catch (Exception e){
+                System.out.println(e);
+            }
+            session.setAttribute("topKDocs", docSimMap);
             url = "/WEB-INF/view/semanticSearch.jsp";
-
         }
-        request.setAttribute("selectedFiboTerms", selectedFiboTerms);
+
+        request.setAttribute("topKDocs", docSimMap);
         RequestDispatcher dispatcher =getServletContext().getRequestDispatcher(url);
         dispatcher.forward(request, response);
+
+    }
+    public LinkedHashMap sortHashMapByValues(HashMap hashMap) {
+        List mapKeys = new ArrayList(hashMap.keySet());
+        List mapValues = new ArrayList(hashMap.values());
+        Collections.sort(mapValues);
+        Collections.reverse(mapValues);
+        Collections.sort(mapKeys);
+        Collections.reverse(mapKeys);
+
+        LinkedHashMap sortedMap = new LinkedHashMap();
+
+        Iterator valueIt = mapValues.iterator();
+        while (valueIt.hasNext()) {
+            Object val = valueIt.next();
+            Iterator keyIt = mapKeys.iterator();
+
+            while (keyIt.hasNext()) {
+                Object key = keyIt.next();
+                String comp1 = hashMap.get(key).toString();
+                String comp2 = val.toString();
+
+                if (comp1.equals(comp2)){
+                    hashMap.remove(key);
+                    mapKeys.remove(key);
+                    sortedMap.put(key, Math.round((Double)val*100.0)/100.0);
+                    break;
+                }
+            }
+        }
+        return sortedMap;
     }
 }
