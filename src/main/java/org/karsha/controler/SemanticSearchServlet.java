@@ -37,7 +37,10 @@ public class SemanticSearchServlet extends HttpServlet {
 
         if(userPath.equals("/semanticSearch")) {
             ArrayList<FiboTerm> fiboList = FiboDB.getAllFiboTerms();
+            MutableTree<String> tree= new MappedTreeStructure().getFiboTree();
             session.setAttribute("fiboList", fiboList);
+            List<String> roots = tree.getRoots();
+            session.setAttribute("roots", roots);
             url = "/WEB-INF/view/semanticSearch.jsp";
         }
 

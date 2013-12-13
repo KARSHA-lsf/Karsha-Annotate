@@ -26,6 +26,7 @@ package org.karsha.controler;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -64,6 +65,15 @@ public class CreateCollectionServelet extends HttpServlet{
          
         if(userPath.equals("/createcollection")) { 
            ArrayList<CollectionType> collectionTypeList = CollectionTypDB.getAllCollectionType();
+
+            MutableTree<String> tree= new MappedTreeStructure().getFiboTree();
+            List<String> roots = tree.getRoots();
+            System.out.println("aAA"+tree.getChildren(tree.getRoots().get(0)).size());
+            /*for(int i=0;i<tree.getChildren(tree.getRoots().get(1)).size();i++){
+
+            }*/
+            session.setAttribute("roots", roots);
+
             session.setAttribute("collectionTypeList", collectionTypeList);
                  url = "/WEB-INF/view/createcollection.jsp";  
          }
