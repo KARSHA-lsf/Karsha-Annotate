@@ -1,25 +1,4 @@
-<%--
-   Copyright (C) 2013, Lanka Software Foundation and and University of Maryland.
-
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU Affero General Public License as
-   published by the Free Software Foundation, either version 3 of the
-   License, or (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU Affero General Public License for more details.
-
-   You should have received a copy of the GNU Affero General Public License
-   along with this program.  If not, see <http://www.gnu.org/licenses/>
-
-
-    Document   : selectsimilardoc
-    Created on : Nov 29, 2013, 9:46:42 AM
-    Author     : Randula Jayathilaka
---%>
-<%@page import="org.karsha.entities.Document"%>
+﻿<%@page import="org.karsha.entities.Document"%>
 <%@page import="org.karsha.entities.CollectionType"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
@@ -32,18 +11,44 @@
     <meta name="author" content="Your Name"/>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 
-    <script type="text/javascript" src="scripts/jquery-1.8.1.js"></script>
-    <script type="text/javascript" src="jqwidgets/jqxcore.js"></script>
-    <script type="text/javascript" src="jqwidgets/jqxbuttons.js"></script>
-    <script type="text/javascript" src="jqwidgets/jqxscrollbar.js"></script>
-    <script type="text/javascript" src="jqwidgets/jqxpanel.js"></script>
-    <script type="text/javascript" src="jqwidgets/jqxtree.js"></script>
-    <script type="text/javascript" src="jqwidgets/jqxcheckbox.js"></script>
 
-    <link rel="stylesheet" href="css/style.css" type="text/css" media="screen, projection">
-    <script type="text/javascript" src="javaScript/jquery-1.4.2.min.js">
-    </script>
-    <script type="text/javascript" src="javaScript/scripts.js">
+    <link rel="stylesheet" href="jqwidgets1/jqwidgets/styles/jqx.base.css" type="text/css" />
+    <script type="text/javascript" src="jqwidgets1/scripts/gettheme.js"></script>
+    <script type="text/javascript" src="jqwidgets1/scripts/jquery-1.10.2.min.js"></script>
+    <script type="text/javascript" src="jqwidgets1/jqwidgets/jqxcore.js"></script>
+    <script type="text/javascript" src="jqwidgets1/jqwidgets/jqxbuttons.js"></script>
+    <script type="text/javascript" src="jqwidgets1/jqwidgets/jqxscrollbar.js"></script>
+    <script type="text/javascript" src="jqwidgets1/jqwidgets/jqxpanel.js"></script>
+    <script type="text/javascript" src="jqwidgets1/jqwidgets/jqxtree.js"></script>
+    <script type="text/javascript" src="jqwidgets1/jqwidgets/jqxcheckbox.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            // Create jqxTree
+            var theme = getDemoTheme();
+            // create jqxTree
+            $('#jqxTree').jqxTree({ height: '400px', hasThreeStates: true, checkboxes: true, width: '330px', theme: theme });
+            $('#jqxCheckBox').jqxCheckBox({ width: '200px', height: '25px', checked: true, theme: theme });
+            $('#jqxCheckBox').on('change', function (event) {
+                var checked = event.args.checked;
+                $('#jqxTree').jqxTree({ hasThreeStates: checked });
+            });
+            $("#jqxTree").jqxTree('selectItem', $("#home")[0]);
+            $("#Search").click(function () {
+                var fiboterms =new Array();
+                fiboterms = $('#jqxTree').jqxTree('getCheckedItems');
+                $.ajax({
+                    url: "getsimilardocs",
+                    data: fiboterms,
+                    success: function(data) {
+                        $('#results').show();
+                        $('#results').html(data);
+                    },
+                    dataType : "String[]",
+                    timeout : 30000,
+                    type : "post"
+                });
+            });
+        });
     </script>
 
     <style type="text/css">
@@ -100,214 +105,241 @@
     <title>Karsha Annotation Tool </title>
 </head>
 
-<body>
+<body class='default'>
 
-<div id="container">
-    <div id="sitename">
-        <h1>Karsha</h1>
+        <div id="container">
+        <div id="sitename">
+            <h1>Karsha</h1>
 
-        <h2>Annotation Tool</h2>
+            <h2>Annotation Tool</h2>
 
-        <%
-        String userLogin = (String) session.getAttribute("username");
-        if (userLogin != null) {
-    %>
-    <label> Welcome <%=userLogin%> </label>&nbsp;&nbsp;&nbsp;
-    <a href="userlogout"><font color="white"> Log Out </font>
-    </a>
-    <%
-        }
-    %>
+            <%
+                String userLogin = (String) session.getAttribute("username");
+                if (userLogin != null) {
+            %>
+            <label> Welcome <%=userLogin%> </label>&nbsp;&nbsp;&nbsp;
+            <a href="userlogout"><font color="white"> Log Out </font>
+            </a>
+            <%
+                }
+            %>
 
 
-    </div>
-    <div id="mainmenu">
-        <ul>
-            <li><a href="index.html">Karsha</a></li>
+        </div>
+        <div id="mainmenu">
+            <ul>
+                <li><a href="index.html">Karsha</a></li>
 
-        </ul>
-    </div>
+            </ul>
+        </div>
 
-    <div id="wrap">
-        <div id="leftside">
+        <div id="wrap">
+            <div id="leftside">
 
-            <p>
-                <a class="nav" href="uploaddocuments">Admin</a>
-                <a class="nav sub" href="uploaddocuments">Upload Doc</a>
-                <a class="nav sub" href="newuser">User Management</a>
+                <p>
+                    <a class="nav" href="uploaddocuments">Admin</a>
+                    <a class="nav sub" href="uploaddocuments">Upload Doc</a>
+                    <a class="nav sub" href="newuser">User Management</a>
 
-            </p>
+                </p>
 
-            <p>
-                <a class="nav" href="createcollection">Annotate</a>
-            </p>
+                <p>
+                    <a class="nav" href="createcollection">Annotate</a>
+                </p>
 
-            <p>
-                <a class="nav" href="createdoccollection">Doc Section MarkUp</a>
-            </p>
+                <p>
+                    <a class="nav" href="createdoccollection">Doc Section MarkUp</a>
+                </p>
 
-            <p>
-                <a class="nav">Search</a>
-                <a class="nav sub" href="docsearch">Document Similarity</a>
-                <a class="nav sub" href="semanticSearch">Semantic Similarity</a>
-            </p>
+                <p>
+                    <a class="nav">Search</a>
+                    <a class="nav sub" href="docsearch">Document Similarity</a>
+                    <a class="nav sub" href="semanticSearch">Semantic Similarity</a>
+                </p>
+
+            </div>
 
         </div>
 
-    </div>
+        <div id="content" style="height:auto; min-height: 800px">
 
-    <div id="content" style="height:auto; min-height: 800px">
+            <%@ page import="org.karsha.entities.FiboTerm" %>
+            <%@ page import="java.util.*" %>
 
-        <%@ page import="org.karsha.entities.FiboTerm" %>
-        <%@ page import="java.util.*" %>
+            <%
+                //Showing message that data is success full aster full markup cycle
 
-        <%
-        //Showing message that data is success full aster full markup cycle
+                String savesucces = (String) session.getAttribute("savesucces");
+                if (savesucces != null) {
+            %>
 
-        String savesucces = (String) session.getAttribute("savesucces");
-        if (savesucces != null) {
-    %>
-
-    <h2 style="color:red;"><%=savesucces%></h2>
+            <h2 style="color:red;"><%=savesucces%></h2>
 
 
-    <%
-            session.setAttribute("savesucces", null);
-        }
-    %>
+            <%
+                    session.setAttribute("savesucces", null);
+                }
+            %>
 
 
-    <script>
-        function validate(){
-            var selectedckbox=0;
-            var noofcheckboxes= document.getElementsByName("docCkBox");
-            for(var i=0; i<noofcheckboxes.length; i++){
-                if (eval("document.docForm.docCkBox[" + i + "].checked")==true) {
-                    selectedckbox++;
+            <script>
+                function validate(){
+                    var selectedckbox=0;
+                    var noofcheckboxes= document.getElementsByName("docCkBox");
+                    for(var i=0; i<noofcheckboxes.length; i++){
+                        if (eval("document.docForm.docCkBox[" + i + "].checked")==true) {
+                            selectedckbox++;
+                        }
+
+                    }
+
+                    if(selectedckbox>=1){ // have to select atleast 1 checkboxes
+                        return true;
+                    }
+                    else{
+
+                        alert ('Please select atleast 1 documents');
+                        return false;
+                    }
+
                 }
 
-            }
 
-            if(selectedckbox>=1){ // have to select atleast 1 checkboxes
-                return true;
-            }
-            else{
+            </script>
 
-                alert ('Please select atleast 1 documents');
-                return false;
-            }
+            <div id="indexRightColumn">
 
-        }
+                <h2>Find Similar Documents (FIBO based)</h2>
+                <h3>FIBO Terms (Tick Terms To Search)</h3>
 
+                <table border="0" cellspacing="2">
+                    <tbody>
+                    <tr>
+                        <form method="post" action="getsimilardocs">
+                            <input type="hidden" name="field" value="">
 
-    </script>
+                            <div id='jqxWidget'>
+                                <div style='float: left;'>
+                                    <div id='jqxTree' style='float: left; margin-left: 20px;'>
+                                        <ul>
+                                            <%
+                                                List children = (List)session.getAttribute("children");
+                                                for(int i=0;i<children.size();i++){
+                                                    List  subChil= (List)session.getAttribute("childrenof"+i);
+                                            %>
+                                            <li item-expanded='false'>
+                                                <%=children.get(i)%>
+                                                    <ul>
+                                                            <%
+                                                                for(int x=0;x<subChil.size();x++) {
 
-    <div id="indexRightColumn">
+                                                            %>
+                                                        <li>
+                                                            <%=subChil.get(x)%>
+                                                            <ul>
+                                                                <%
+                                                                    try{
+                                                                        List subChil2 = (List) session.getAttribute("subChiof"+i+""+x);
+                                                                        for(int z=0;z<subChil2.size();z++) {
+                                                                %>
+                                                                <li>
+                                                                    <%=subChil2.get(z)%>
+                                                                    <%
+                                                                        }
 
-        <h2>Find Similar Documents (FIBO based)</h2>
-        <h3>FIBO Terms (Tick Terms To Search)</h3>
+                                                                        }catch (Exception e){}
+                                                                    %>
 
-        <table border="0" cellspacing="2">
-            <tbody>
-            <tr>
-                <form method="post" action="getsimilardocs">
+                                                                </li>
+                                                            </ul>
+                                                            <%
+                                                                }
+                                                            %>
 
-                    <td>
-                        <div id="listContainer">
-                            <div class="listControl">
-                                <a id="expandList">Expand All</a>
-                                <a id="collapseList">Collapse All</a>
-                                <input type="submit" value="Search" name="search" />
+                                                        </li>
+                                                    </ul>
+                                            </li>
+                                                        <%
+                                                            }
+                                                        %>
+
+                                        </ul>
+                                    </div>
+                                    <div style='margin-left: 60px; float: left;'>
+                                    </div>
+                                </div>
                             </div>
-                            <ul id="expList">
-                                <li>
-                                    FIBO TERMS
-                                    <ul>
-                                        <li>
-                                            <%
-                                                ArrayList<FiboTerm> fiboList = (ArrayList<FiboTerm>) session.getAttribute("fiboList");
-                                                for (int i = 0; i < fiboList.size(); i++) {
-                                            %>
-                                            <input id="checkBox" type="checkbox" value="<%=fiboList.get(i).getFiboId()%>" name="fiboterms"><%=fiboList.get(i).getFiboTerm()%></br>
-                                            <%
-                                                }
-                                            %>
-                                        </li>
-                                    </ul>
-                                </li>
-                            </ul>
-                        </div>
-                        <script>
-                            var $checks = $(".expList").change(function () { //for each checkbox
-                                $checks.filter(':checked')
-                            });
-                        </script>
-                    </td>
-                </form>
-            </tr>
+                            <div><input type="submit" value="Search" name="search" /></div>
+                            <SCRIPT LANGUAGE="JAVASCRIPT">
+                                document.getElementById('field').value=fiboterms;
+                            </SCRIPT>
+                        </form>
+                    </tr>
 
-            <tr><td colspan="3">&nbsp;</td></tr>
+                    <tr><td colspan="3">&nbsp;</td></tr>
 
 
-            <form name="docForm" method="post" action="getsimilardocs">
-                <tr>
-                    <td colspan="3">
-                        <% if (request.getMethod().equals("POST")) {%>
+                    <form name="docForm" method="post" action="getsimilardocs">
+                        <tr>
+                            <td colspan="3">
+                                <% if (request.getMethod().equals("POST")) {%>
 
-                        <br/>
-                        <table class="gridtable" width="100%">
-                            <tbody>
-                            <tr>
-                                <td><b> DocID </b></td>
-                                <td><b> SimScore </b></td>
+                                <br/>
+                                <table class="gridtable" width="100%">
+                                    <tbody>
+                                    <tr>
+                                        <td><b> DocID </b></td>
+                                        <td><b> SimScore </b></td>
 
-                            </tr>
-                            <%
-                                HashMap<Integer,Double> topKDocs = (HashMap<Integer,Double>)session.getAttribute("topKDocs");
+                                    </tr>
+                                    <%
+                                        HashMap<Integer,Double> topKDocs = (HashMap<Integer,Double>)session.getAttribute("topKDocs");
 
-                                for (Map.Entry entryParent: topKDocs.entrySet()){
-                                    if((Double) entryParent.getValue()!=0.0){
-                                    String docID =entryParent.getKey().toString();
-                                    double SimScore=(Double) entryParent.getValue();
+                                        for (Map.Entry entryParent: topKDocs.entrySet()){
+                                            if((Double) entryParent.getValue()!=0.0){
+                                                String docID =entryParent.getKey().toString();
+                                                double SimScore=(Double) entryParent.getValue();
 
-                            %>
-                            <tr>
-                                <td> <%=docID%> </td>
-                                <td> <%=SimScore%> </td>
+                                    %>
+                                    <tr>
+                                        <td> <%=docID%> </td>
+                                        <td> <%=SimScore%> </td>
 
-                            </tr>
+                                    </tr>
 
-                            <%
-                                    }
-                                }
+                                    <%
+                                            }
+                                        }
 
-                            %>
+                                    %>
 
 
-                            </tbody>
-                        </table>
-                        <% }%>
+                                    </tbody>
+                                </table>
+                                <% }%>
 
-                    </td>
-                </tr>
+                            </td>
+                        </tr>
 
-                <tr><td colspan="3">&nbsp;</td></tr>
-                <tr><td colspan="3">&nbsp;</td></tr>
-            </form>
+                        <tr><td colspan="3">&nbsp;</td></tr>
+                        <tr><td colspan="3">&nbsp;</td></tr>
+                    </form>
 
-            </tbody>
-        </table>
-        <br/>
-        <br/>
-    </div>
-</div>
+                    </tbody>
+                </table>
+                <br/>
+                <br/>
+            </div>
+        </div>
+        <div id="results"></div>
+        <div class="clearingdiv">&nbsp;</div>
 
-<div class="clearingdiv">&nbsp;</div>
+        <div id="footer">
+            <p>&copy; 2013 <a href="www.opensource.lk">Lanka Software Foundation</a></p>
+        </div>
 
-<div id="footer">
-    <p>&copy; 2013 <a href="www.opensource.lk">Lanka Software Foundation</a></p>
-</div>
+        </div>
 
-</div>
+
 </body>
 </html>

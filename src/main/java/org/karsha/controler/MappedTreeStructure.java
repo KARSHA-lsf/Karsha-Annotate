@@ -8,24 +8,24 @@ import java.util.*;
 
 public class MappedTreeStructure <N extends Serializable> implements MutableTree<N> {
 
-    public MutableTree getFiboTree () {
+    private final Map<N, N> nodeParent = new HashMap<N, N>();
+    private final LinkedHashSet<N> nodeList = new LinkedHashSet<N>();
+
+    public MutableTree setFiboTree () {
 
         MutableTree<String> tree = new MappedTreeStructure<String>();
-        /*tree.add("A", "B");
-        tree.add("A", "C");
-        tree.add("C", "D");
-        tree.add("E", "F");*/
         ArrayList<FiboRelation> fiboRelationList= FiboRelationDB.getAllFiboRelations();
         for(int i=0;i<fiboRelationList.size();i++){
             tree.add(""+fiboRelationList.get(i).getFiboId(),""+fiboRelationList.get(i).getChildFiboId());
         }
-        System.out.println(tree);
         return tree;
-
     }
-
-    private final Map<N, N> nodeParent = new HashMap<N, N>();
-    private final LinkedHashSet<N> nodeList = new LinkedHashSet<N>();
+    public Map getNodeParent(){
+        return nodeParent;
+    }
+    public LinkedHashSet getNodeList(){
+        return nodeList;
+    }
 
     @Override
     public boolean add (N parent, N node) {

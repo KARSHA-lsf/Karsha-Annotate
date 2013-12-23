@@ -52,7 +52,7 @@
 
 
 <div id="footer">
-                    <p>&copy; 2012 <a href="www.opensource.lk">Lanka Software Foundation</a></p>
+                    <p>&copy; 2013 <a href="www.opensource.lk">Lanka Software Foundation</a></p>
             </div>
 
     </body>

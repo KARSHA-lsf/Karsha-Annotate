@@ -16,6 +16,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -34,13 +35,33 @@ public class SemanticSearchServlet extends HttpServlet {
         String userPath = request.getServletPath();
         HttpSession session = request.getSession();
         String url = null;
+        LinkedHashSet nodeList;
+        Map nodeParent;
 
         if(userPath.equals("/semanticSearch")) {
+            MappedTreeStructure mts = new MappedTreeStructure();
             ArrayList<FiboTerm> fiboList = FiboDB.getAllFiboTerms();
-            MutableTree<String> tree= new MappedTreeStructure().getFiboTree();
-            session.setAttribute("fiboList", fiboList);
+            MutableTree tree= mts.setFiboTree();
             List<String> roots = tree.getRoots();
             session.setAttribute("roots", roots);
+            List children =  tree.getChildren(roots.get(0));
+            session.setAttribute("children", children);
+            session.setAttribute("numofchildren",""+children.size());
+            for(int i=0;i<1;i++){
+                /*System.out.println("roots"+roots.get(i).toString());
+                System.out.println("parent"+tree.getParent(roots.get(i)).toString());*/
+                for(int x=0;x<children.size();x++) {
+                   /* System.out.println("children"+x+":"+children.get(x).toString());
+                    System.out.println(tree.getChildren((Serializable) children.get(x)));*/
+                    session.setAttribute("childrenof"+x,tree.getChildren((Serializable) children.get(x)));
+                    session.setAttribute("numofsubchi"+x,""+tree.getChildren((Serializable) children.get(x)).size());
+                    for(int y=0;y<tree.getChildren((Serializable) children.get(x)).size();y++){
+                               //System.out.println("subChi :"+x+""+y + tree.getChildren((Serializable) tree.getChildren((Serializable) children.get(x)).get(y)));
+                        session.setAttribute("subChiof"+x+""+y,tree.getChildren((Serializable) tree.getChildren((Serializable) children.get(x)).get(y)));
+                    }
+                }
+            }
+            session.setAttribute("fiboList", fiboList);
             url = "/WEB-INF/view/semanticSearch.jsp";
         }
 
@@ -54,7 +75,7 @@ public class SemanticSearchServlet extends HttpServlet {
         HttpSession session = request.getSession();
         String url = null;
         String[] selectedFibos;
-        selectedFibos = request.getParameterValues("fiboterms");
+        selectedFibos =request.getParameterValues("fiboterms");
         HashMap<Integer,Double> docSim= new HashMap<Integer, Double>();
         LinkedHashMap<String,Integer> docSimMap = new LinkedHashMap<String, Integer>();
         HashMap<Integer, TreeMap> topKDocs = new HashMap<Integer, TreeMap>();
