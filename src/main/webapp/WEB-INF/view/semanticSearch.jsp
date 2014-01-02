@@ -27,26 +27,10 @@
             var theme = getDemoTheme();
             // create jqxTree
             $('#jqxTree').jqxTree({ height: '400px', hasThreeStates: true, checkboxes: true, width: '330px', theme: theme });
-            $('#jqxCheckBox').jqxCheckBox({ width: '200px', height: '25px', checked: true, theme: theme });
-            $('#jqxCheckBox').on('change', function (event) {
-                var checked = event.args.checked;
-                $('#jqxTree').jqxTree({ hasThreeStates: checked });
-            });
-            $("#jqxTree").jqxTree('selectItem', $("#home")[0]);
-            $("#Search").click(function () {
-                var fiboterms =new Array();
-                fiboterms = $('#jqxTree').jqxTree('getCheckedItems');
-                $.ajax({
-                    url: "getsimilardocs",
-                    data: fiboterms,
-                    success: function(data) {
-                        $('#results').show();
-                        $('#results').html(data);
-                    },
-                    dataType : "String[]",
-                    timeout : 30000,
-                    type : "post"
-                });
+            $("input").jqxButton();
+            $("input").click(function () {
+                var checkedItems = $('#jqxTree').jqxTree('getCheckedItems');
+                alert("Value of the first checked item: " +checkedItems[0].value);
             });
         });
     </script>
@@ -106,239 +90,208 @@
 </head>
 
 <body class='default'>
+<div id="container">
+    <div id="sitename">
+        <h1>Karsha</h1>
 
-        <div id="container">
-        <div id="sitename">
-            <h1>Karsha</h1>
+        <h2>Annotation Tool</h2>
 
-            <h2>Annotation Tool</h2>
-
-            <%
-                String userLogin = (String) session.getAttribute("username");
-                if (userLogin != null) {
-            %>
-            <label> Welcome <%=userLogin%> </label>&nbsp;&nbsp;&nbsp;
-            <a href="userlogout"><font color="white"> Log Out </font>
-            </a>
-            <%
-                }
-            %>
+        <%
+            String userLogin = (String) session.getAttribute("username");
+            if (userLogin != null) {
+        %>
+        <label> Welcome <%=userLogin%> </label>&nbsp;&nbsp;&nbsp;
+        <a href="userlogout"><font color="white"> Log Out </font>
+        </a>
+        <%
+            }
+        %>
 
 
-        </div>
-        <div id="mainmenu">
-            <ul>
-                <li><a href="index.html">Karsha</a></li>
+    </div>
+    <div id="mainmenu">
+        <ul>
+            <li><a href="index.html">Karsha</a></li>
 
-            </ul>
-        </div>
+        </ul>
+    </div>
 
-        <div id="wrap">
-            <div id="leftside">
+    <div id="wrap">
+        <div id="leftside">
 
-                <p>
-                    <a class="nav" href="uploaddocuments">Admin</a>
-                    <a class="nav sub" href="uploaddocuments">Upload Doc</a>
-                    <a class="nav sub" href="newuser">User Management</a>
+            <p>
+                <a class="nav" href="uploaddocuments">Admin</a>
+                <a class="nav sub" href="uploaddocuments">Upload Doc</a>
+                <a class="nav sub" href="newuser">User Management</a>
 
-                </p>
+            </p>
 
-                <p>
-                    <a class="nav" href="createcollection">Annotate</a>
-                </p>
+            <p>
+                <a class="nav" href="createcollection">Annotate</a>
+            </p>
 
-                <p>
-                    <a class="nav" href="createdoccollection">Doc Section MarkUp</a>
-                </p>
+            <p>
+                <a class="nav" href="createdoccollection">Doc Section MarkUp</a>
+            </p>
 
-                <p>
-                    <a class="nav">Search</a>
-                    <a class="nav sub" href="docsearch">Document Similarity</a>
-                    <a class="nav sub" href="semanticSearch">Semantic Similarity</a>
-                </p>
-
-            </div>
+            <p>
+                <a class="nav">Search</a>
+                <a class="nav sub" href="docsearch">Document Similarity</a>
+                <a class="nav sub" href="semanticSearch">Semantic Similarity</a>
+            </p>
 
         </div>
 
-        <div id="content" style="height:auto; min-height: 800px">
+    </div>
 
-            <%@ page import="org.karsha.entities.FiboTerm" %>
-            <%@ page import="java.util.*" %>
+    <div id="content" style="height:auto; min-height: 800px">
 
-            <%
-                //Showing message that data is success full aster full markup cycle
+        <%@ page import="org.karsha.entities.FiboTerm" %>
+        <%@ page import="java.util.*" %>
 
-                String savesucces = (String) session.getAttribute("savesucces");
-                if (savesucces != null) {
-            %>
+        <%
+            //Showing message that data is success full aster full markup cycle
 
-            <h2 style="color:red;"><%=savesucces%></h2>
+            String savesucces = (String) session.getAttribute("savesucces");
+            if (savesucces != null) {
+        %>
 
-
-            <%
-                    session.setAttribute("savesucces", null);
-                }
-            %>
+        <h2 style="color:red;"><%=savesucces%></h2>
 
 
-            <script>
-                function validate(){
-                    var selectedckbox=0;
-                    var noofcheckboxes= document.getElementsByName("docCkBox");
-                    for(var i=0; i<noofcheckboxes.length; i++){
-                        if (eval("document.docForm.docCkBox[" + i + "].checked")==true) {
-                            selectedckbox++;
-                        }
+        <%
+                session.setAttribute("savesucces", null);
+            }
+        %>
 
-                    }
+        <div id="indexRightColumn">
 
-                    if(selectedckbox>=1){ // have to select atleast 1 checkboxes
-                        return true;
-                    }
-                    else{
+            <h2>Find Similar Documents (FIBO based)</h2>
+            <h3>FIBO Terms (Tick Terms To Search)</h3>
 
-                        alert ('Please select atleast 1 documents');
-                        return false;
-                    }
-
-                }
-
-
-            </script>
-
-            <div id="indexRightColumn">
-
-                <h2>Find Similar Documents (FIBO based)</h2>
-                <h3>FIBO Terms (Tick Terms To Search)</h3>
-
-                <table border="0" cellspacing="2">
-                    <tbody>
-                    <tr>
-                        <form method="post" action="getsimilardocs">
-                            <input type="hidden" name="field" value="">
-
-                            <div id='jqxWidget'>
-                                <div style='float: left;'>
-                                    <div id='jqxTree' style='float: left; margin-left: 20px;'>
+            <table border="0" cellspacing="2">
+                <tbody>
+                <tr>
+                    <form method="post" action="getsimilardocs">
+                    <div id='jqxWidget'>
+                        <div style='float: left;'>
+                            <div id='jqxTree' style='float: left; margin-left: 20px;'>
+                                <ul>
+                                    <%
+                                        List children = (List)session.getAttribute("children");
+                                        for(int i=0;i<children.size();i++){
+                                            List  subChil= (List)session.getAttribute("childrenof"+i);
+                                    %>
+                                    <li item-expanded='false'>
+                                        <%=children.get(i)%>
                                         <ul>
                                             <%
-                                                List children = (List)session.getAttribute("children");
-                                                for(int i=0;i<children.size();i++){
-                                                    List  subChil= (List)session.getAttribute("childrenof"+i);
+                                                for(int x=0;x<subChil.size();x++) {
+
                                             %>
-                                            <li item-expanded='false'>
-                                                <%=children.get(i)%>
-                                                    <ul>
-                                                            <%
-                                                                for(int x=0;x<subChil.size();x++) {
-
-                                                            %>
-                                                        <li>
-                                                            <%=subChil.get(x)%>
-                                                            <ul>
-                                                                <%
-                                                                    try{
-                                                                        List subChil2 = (List) session.getAttribute("subChiof"+i+""+x);
-                                                                        for(int z=0;z<subChil2.size();z++) {
-                                                                %>
-                                                                <li>
-                                                                    <%=subChil2.get(z)%>
-                                                                    <%
-                                                                        }
-
-                                                                        }catch (Exception e){}
-                                                                    %>
-
-                                                                </li>
-                                                            </ul>
-                                                            <%
-                                                                }
-                                                            %>
-
-                                                        </li>
-                                                    </ul>
-                                            </li>
+                                            <li>
+                                                <%=subChil.get(x)%>
+                                                <ul>
+                                                    <%
+                                                        try{
+                                                            List subChil2 = (List) session.getAttribute("subChiof"+i+""+x);
+                                                            for(int z=0;z<subChil2.size();z++) {
+                                                    %>
+                                                    <li>
+                                                        <%=subChil2.get(z)%>
                                                         <%
-                                                            }
+                                                                }
+
+                                                            }catch (Exception e){}
                                                         %>
 
+                                                    </li>
+                                                </ul>
+                                                <%
+                                                    }
+                                                %>
+
+                                            </li>
                                         </ul>
-                                    </div>
-                                    <div style='margin-left: 60px; float: left;'>
-                                    </div>
-                                </div>
+                                    </li>
+                                    <%
+                                        }
+                                    %>
+
+                                </ul>
                             </div>
-                            <div><input type="submit" value="Search" name="search" /></div>
-                            <SCRIPT LANGUAGE="JAVASCRIPT">
-                                document.getElementById('field').value=fiboterms;
-                            </SCRIPT>
-                        </form>
+                            <div style='margin-left: 60px; float: left;'>
+                            </div>
+                        </div>
+                    </div>
+                    <div><input id="submit" type="submit" /></div>
+                    </form>
+                </tr>
+
+
+                <tr><td colspan="3">&nbsp;</td></tr>
+
+
+                <form name="docForm" method="post" action="getsimilardocs">
+                    <tr>
+                        <td colspan="3">
+                            <% if (request.getMethod().equals("POST")) {%>
+
+                            <br/>
+                            <table class="gridtable" width="100%">
+                                <tbody>
+                                <tr>
+                                    <td><b> DocID </b></td>
+                                    <td><b> SimScore </b></td>
+
+                                </tr>
+                                <%
+                                    HashMap<Integer,Double> topKDocs = (HashMap<Integer,Double>)session.getAttribute("topKDocs");
+
+                                    for (Map.Entry entryParent: topKDocs.entrySet()){
+                                        if((Double) entryParent.getValue()!=0.0){
+                                            String docID =entryParent.getKey().toString();
+                                            double SimScore=(Double) entryParent.getValue();
+
+                                %>
+                                <tr>
+                                    <td> <%=docID%> </td>
+                                    <td> <%=SimScore%> </td>
+
+                                </tr>
+
+                                <%
+                                        }
+                                    }
+
+                                %>
+
+
+                                </tbody>
+                            </table>
+                            <% }%>
+
+                        </td>
                     </tr>
 
                     <tr><td colspan="3">&nbsp;</td></tr>
+                    <tr><td colspan="3">&nbsp;</td></tr>
+                </form>
 
-
-                    <form name="docForm" method="post" action="getsimilardocs">
-                        <tr>
-                            <td colspan="3">
-                                <% if (request.getMethod().equals("POST")) {%>
-
-                                <br/>
-                                <table class="gridtable" width="100%">
-                                    <tbody>
-                                    <tr>
-                                        <td><b> DocID </b></td>
-                                        <td><b> SimScore </b></td>
-
-                                    </tr>
-                                    <%
-                                        HashMap<Integer,Double> topKDocs = (HashMap<Integer,Double>)session.getAttribute("topKDocs");
-
-                                        for (Map.Entry entryParent: topKDocs.entrySet()){
-                                            if((Double) entryParent.getValue()!=0.0){
-                                                String docID =entryParent.getKey().toString();
-                                                double SimScore=(Double) entryParent.getValue();
-
-                                    %>
-                                    <tr>
-                                        <td> <%=docID%> </td>
-                                        <td> <%=SimScore%> </td>
-
-                                    </tr>
-
-                                    <%
-                                            }
-                                        }
-
-                                    %>
-
-
-                                    </tbody>
-                                </table>
-                                <% }%>
-
-                            </td>
-                        </tr>
-
-                        <tr><td colspan="3">&nbsp;</td></tr>
-                        <tr><td colspan="3">&nbsp;</td></tr>
-                    </form>
-
-                    </tbody>
-                </table>
-                <br/>
-                <br/>
-            </div>
+                </tbody>
+            </table>
+            <br/>
+            <br/>
         </div>
-        <div id="results"></div>
-        <div class="clearingdiv">&nbsp;</div>
+    </div>
+    <div id="results"></div>
+    <div class="clearingdiv">&nbsp;</div>
 
-        <div id="footer">
-            <p>&copy; 2013 <a href="www.opensource.lk">Lanka Software Foundation</a></p>
-        </div>
+    <div id="footer">
+        <p>&copy; 2013 <a href="www.opensource.lk">Lanka Software Foundation</a></p>
+    </div>
 
-        </div>
+</div>
 
 
 </body>

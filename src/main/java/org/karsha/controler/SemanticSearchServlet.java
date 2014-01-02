@@ -75,7 +75,7 @@ public class SemanticSearchServlet extends HttpServlet {
         HttpSession session = request.getSession();
         String url = null;
         String[] selectedFibos;
-        selectedFibos =request.getParameterValues("fiboterms");
+        selectedFibos =request.getParameterValues("checkedItems");
         HashMap<Integer,Double> docSim= new HashMap<Integer, Double>();
         LinkedHashMap<String,Integer> docSimMap = new LinkedHashMap<String, Integer>();
         HashMap<Integer, TreeMap> topKDocs = new HashMap<Integer, TreeMap>();
