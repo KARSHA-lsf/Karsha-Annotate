@@ -48,15 +48,10 @@ public class SemanticSearchServlet extends HttpServlet {
             session.setAttribute("children", children);
             session.setAttribute("numofchildren",""+children.size());
             for(int i=0;i<1;i++){
-                /*System.out.println("roots"+roots.get(i).toString());
-                System.out.println("parent"+tree.getParent(roots.get(i)).toString());*/
                 for(int x=0;x<children.size();x++) {
-                   /* System.out.println("children"+x+":"+children.get(x).toString());
-                    System.out.println(tree.getChildren((Serializable) children.get(x)));*/
                     session.setAttribute("childrenof"+x,tree.getChildren((Serializable) children.get(x)));
                     session.setAttribute("numofsubchi"+x,""+tree.getChildren((Serializable) children.get(x)).size());
                     for(int y=0;y<tree.getChildren((Serializable) children.get(x)).size();y++){
-                               //System.out.println("subChi :"+x+""+y + tree.getChildren((Serializable) tree.getChildren((Serializable) children.get(x)).get(y)));
                         session.setAttribute("subChiof"+x+""+y,tree.getChildren((Serializable) tree.getChildren((Serializable) children.get(x)).get(y)));
                     }
                 }
@@ -74,14 +69,15 @@ public class SemanticSearchServlet extends HttpServlet {
         String userPath = request.getServletPath();
         HttpSession session = request.getSession();
         String url = null;
-        String[] selectedFibos;
-        selectedFibos =request.getParameterValues("checkedItems");
+
         HashMap<Integer,Double> docSim= new HashMap<Integer, Double>();
         LinkedHashMap<String,Integer> docSimMap = new LinkedHashMap<String, Integer>();
         HashMap<Integer, TreeMap> topKDocs = new HashMap<Integer, TreeMap>();
-        int noOfFiboTerms=selectedFibos.length;
 
         if(userPath.equals("/getsimilardocs")) {
+            String[] selectedFibos;
+            selectedFibos =request.getParameterValues("items");
+            int noOfFiboTerms=selectedFibos.length;
             System.out.println("noOfFiboTerms"+noOfFiboTerms);
             int noOfDocSecs = 0;
             int noOfDocs = 0;

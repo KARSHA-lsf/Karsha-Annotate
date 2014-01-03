@@ -23,16 +23,24 @@
     <script type="text/javascript" src="jqwidgets1/jqwidgets/jqxcheckbox.js"></script>
     <script type="text/javascript">
         $(document).ready(function () {
-            // Create jqxTree
             var theme = getDemoTheme();
             // create jqxTree
             $('#jqxTree').jqxTree({ height: '400px', hasThreeStates: true, checkboxes: true, width: '330px', theme: theme });
             $("input").jqxButton();
             $("input").click(function () {
-                var checkedItems = $('#jqxTree').jqxTree('getCheckedItems');
-                alert("Value of the first checked item: " +checkedItems[0].value);
+                var str = "";
+                var items = $('#jqxTree').jqxTree('getCheckedItems');
+                for (var i = 0; i < items.length; i++) {
+                    var item = items[i];
+                    str += item.label + ",";
+                }
+                alert("The checked items are " + str);
+
+                $.post("getsimilardocs", {items: items}, function(responce){
+                });
             });
         });
+
     </script>
 
     <style type="text/css">
@@ -148,6 +156,7 @@
 
         <%@ page import="org.karsha.entities.FiboTerm" %>
         <%@ page import="java.util.*" %>
+        <%@ page import="org.karsha.data.FiboDB" %>
 
         <%
             //Showing message that data is success full aster full markup cycle
@@ -183,14 +192,14 @@
                                             List  subChil= (List)session.getAttribute("childrenof"+i);
                                     %>
                                     <li item-expanded='false'>
-                                        <%=children.get(i)%>
+                                        <%=FiboDB.getFiboTermById(Integer.parseInt((String)children.get(i))).getFiboTerm()%>
                                         <ul>
                                             <%
                                                 for(int x=0;x<subChil.size();x++) {
 
                                             %>
                                             <li>
-                                                <%=subChil.get(x)%>
+                                                <%=FiboDB.getFiboTermById(Integer.parseInt((String)subChil.get(x))).getFiboTerm()%>
                                                 <ul>
                                                     <%
                                                         try{
@@ -198,7 +207,7 @@
                                                             for(int z=0;z<subChil2.size();z++) {
                                                     %>
                                                     <li>
-                                                        <%=subChil2.get(z)%>
+                                                        <%=FiboDB.getFiboTermById(Integer.parseInt((String)subChil2.get(z))).getFiboTerm()%>
                                                         <%
                                                                 }
 
