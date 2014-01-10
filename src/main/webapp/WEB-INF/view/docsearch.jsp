@@ -236,7 +236,7 @@
         <tr><td colspan="3">&nbsp;</td></tr>
 
 
-        <form name="docForm" method="post" action="selectSections" onsubmit="javascript:return validate();">
+
             <tr>
                 <td colspan="3">
                     <% if (request.getMethod().equals("POST")) {%>
@@ -269,7 +269,7 @@
 
             <tr><td colspan="3">&nbsp;</td></tr>
             <tr><td colspan="3">&nbsp;</td></tr>
-        </form>
+
 
         </tbody>
     </table>

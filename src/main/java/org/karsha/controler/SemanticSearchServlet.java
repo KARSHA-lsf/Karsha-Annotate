@@ -16,6 +16,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.io.Serializable;
 import java.util.*;
 import java.util.logging.Level;
@@ -68,15 +69,21 @@ public class SemanticSearchServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String userPath = request.getServletPath();
         HttpSession session = request.getSession();
+        PrintWriter writer = response.getWriter();
         String url = null;
+        String hashMapValues="";
 
         HashMap<Integer,Double> docSim= new HashMap<Integer, Double>();
         LinkedHashMap<String,Integer> docSimMap = new LinkedHashMap<String, Integer>();
         HashMap<Integer, TreeMap> topKDocs = new HashMap<Integer, TreeMap>();
 
         if(userPath.equals("/getsimilardocs")) {
-            String[] selectedFibos;
-            selectedFibos =request.getParameterValues("items");
+            String selectedFibosIn;
+            selectedFibosIn =request.getParameter("items");
+            String FilteredIn = selectedFibosIn.replaceAll("[\"\\[\\]]","");
+            String[] selectedFibos = FilteredIn.split(",");
+            for(int i=0;i<selectedFibos.length;i++){
+            System.out.println(selectedFibos[i]);   }
             int noOfFiboTerms=selectedFibos.length;
             System.out.println("noOfFiboTerms"+noOfFiboTerms);
             int noOfDocSecs = 0;
@@ -119,47 +126,45 @@ public class SemanticSearchServlet extends HttpServlet {
                 docIds[i] = Docids.get(i).toString();
             }
             for (int i = 0; i < noOfFiboTerms; i++) {
-                docContent[noOfDocs + i] = FiboDB.getFiboTermById(Integer.parseInt(selectedFibos[i])).getFiboTerm() + FiboDB.getFiboTermById(Integer.parseInt(selectedFibos[i])).getFiboDefinition();
-                docNames[noOfDocs + i] = selectedFibos[i];
+                docContent[noOfDocs + i] = selectedFibos[i] + FiboDB.getFiboTermById(FiboDB.getFiboTermID(selectedFibos[i]).getFiboId()).getFiboDefinition();
+                docNames[noOfDocs + i] = ""+FiboDB.getFiboTermID(selectedFibos[i]).getFiboId();
             }
-
             DocIndexerTest docInd = new DocIndexerTest( docContent, docNames );
 
             int noOfDocuments= DocumentDB.getAllDocuments().size();
             try {
                 double avgSimScore;
                 int counter;
-
-             //   System.out.println("!!!!!");
                 topKDocs = docInd.getSimilarDocs( noOfDocuments, docIds, 0);
                 for (Map.Entry entryParent: topKDocs.entrySet()){
                     counter=0;
                     avgSimScore=0;
                     String docID =entryParent.getKey().toString();
-                //    System.out.println("docID"+Integer.parseInt(docID));
+                    System.out.println("docID"+Integer.parseInt(docID));
                     TreeMap<String, Double> sortedMap = (TreeMap<String, Double>) entryParent.getValue();
 
                     for (Map.Entry entryChild : sortedMap.entrySet()) {
-                        double SimScore=(Double) entryChild.getValue();
-                //        System.out.println("avgSimScore"+avgSimScore/counter);
-                        avgSimScore = avgSimScore + SimScore;
                         counter++;
+                        double SimScore=(Double) entryChild.getValue();
+                        avgSimScore = avgSimScore + SimScore;
                     }
+                    System.out.println("avgSimScore"+avgSimScore/counter);
                     docSim.put(Integer.parseInt(docID),avgSimScore/counter);
 
                 }
                 docSimMap = sortHashMapByValues(docSim);
+                for (Map.Entry entry : docSimMap.entrySet()) {
+                    hashMapValues =hashMapValues+ entry.getKey()+"$"+ entry.getValue()+"#";
+                }
 
             }  catch (Exception e){
                 System.out.println(e);
             }
             session.setAttribute("topKDocs", docSimMap);
-            url = "/WEB-INF/view/semanticSearch.jsp";
+           writer.write(hashMapValues);
+           writer.close(); 
+      
         }
-
-        request.setAttribute("topKDocs", docSimMap);
-        RequestDispatcher dispatcher =getServletContext().getRequestDispatcher(url);
-        dispatcher.forward(request, response);
 
     }
     public LinkedHashMap sortHashMapByValues(HashMap hashMap) {

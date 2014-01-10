@@ -272,7 +272,7 @@
                                 $("#jqxgrid").jqxGrid('endupdate');
                                 // alert("response:"+responce);
                             });
-                  
+
                         }
                 
 

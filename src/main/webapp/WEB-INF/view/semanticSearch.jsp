@@ -11,38 +11,77 @@
     <meta name="author" content="Your Name"/>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 
-
     <link rel="stylesheet" href="jqwidgets1/jqwidgets/styles/jqx.base.css" type="text/css" />
     <script type="text/javascript" src="jqwidgets1/scripts/gettheme.js"></script>
-    <script type="text/javascript" src="jqwidgets1/scripts/jquery-1.10.2.min.js"></script>
+    <script type="text/javascript" src="scripts/jquery-1.8.1.min.js"></script>
     <script type="text/javascript" src="jqwidgets1/jqwidgets/jqxcore.js"></script>
     <script type="text/javascript" src="jqwidgets1/jqwidgets/jqxbuttons.js"></script>
     <script type="text/javascript" src="jqwidgets1/jqwidgets/jqxscrollbar.js"></script>
     <script type="text/javascript" src="jqwidgets1/jqwidgets/jqxpanel.js"></script>
     <script type="text/javascript" src="jqwidgets1/jqwidgets/jqxtree.js"></script>
     <script type="text/javascript" src="jqwidgets1/jqwidgets/jqxcheckbox.js"></script>
+    <script type="text/javascript" src="jqwidgets1/jqwidgets/jqxdata.js"></script>
+    <script type="text/javascript" src="jqwidgets1/jqwidgets/jqxmenu.js"></script>
+    <script type="text/javascript" src="jqwidgets1/jqwidgets/jqxgrid.js"></script>
+    <script type="text/javascript" src="jqwidgets1/jqwidgets/jqxgrid.selection.js"></script>
+    <script type="text/javascript" src="jqwidgets1/jqwidgets/jqxcheckbox.js"></script>
     <script type="text/javascript">
         $(document).ready(function () {
+
             var theme = getDemoTheme();
             // create jqxTree
-            $('#jqxTree').jqxTree({ height: '400px', hasThreeStates: true, checkboxes: true, width: '330px', theme: theme });
-            $("input").jqxButton();
-            $("input").click(function () {
+            $('#jqxTree').jqxTree({ height: '200px', hasThreeStates: true, checkboxes: true, width: '330px', theme: theme });
+            $("#submit").jqxButton({ theme: theme });
+            $("#submit").bind('click', function () {
                 var str = "";
+                var checkedItems= new Array();
                 var items = $('#jqxTree').jqxTree('getCheckedItems');
                 for (var i = 0; i < items.length; i++) {
                     var item = items[i];
                     str += item.label + ",";
+                    checkedItems[i]=item.label;
                 }
-                alert("The checked items are " + str);
+                $.post("getsimilardocs", {items:JSON.stringify(checkedItems)}, function(response){
 
-                $.post("getsimilardocs", {items: items}, function(responce){
+                    // prepare the data
+                    var data = new Array();
+                    var docIds;
+                    var simScores;
+
+                     var parentStr= new Array();
+                     parentStr=response.split("#");
+                     for(var i=0;i<parentStr.length;i++){
+                     if(parentStr[i]!=null){
+                     var childStr=parentStr[i].split("$");
+                     var row = {};
+                     row["docID"] =childStr[0];
+                     row["simScore"]=childStr[1];
+                     data[i] = row;
+                     }
+                     }
+                    var source =
+                    {
+                        localdata: data,
+                        datatype: "array"
+                    };
+                    var dataAdapter = new $.jqx.dataAdapter(source, {
+                        loadComplete: function (data) { },
+                        loadError: function (xhr, status, error) { }
+                    });
+                    $("#jqxgrid").jqxGrid(
+                            {
+                                width: 200,
+                                source: dataAdapter,
+                                columns: [
+                                    { text: 'Doc ID', datafield: 'docID', width: 100 },
+                                    { text: 'SimScore', datafield: 'simScore', width: 100 }
+                                ]
+                            });
+
                 });
             });
         });
-
     </script>
-
     <style type="text/css">
         .row {
             vertical-align: top;
@@ -96,8 +135,8 @@
     </style>
     <title>Karsha Annotation Tool </title>
 </head>
-
 <body class='default'>
+
 <div id="container">
     <div id="sitename">
         <h1>Karsha</h1>
@@ -178,117 +217,61 @@
             <h2>Find Similar Documents (FIBO based)</h2>
             <h3>FIBO Terms (Tick Terms To Search)</h3>
 
-            <table border="0" cellspacing="2">
-                <tbody>
-                <tr>
-                    <form method="post" action="getsimilardocs">
-                    <div id='jqxWidget'>
-                        <div style='float: left;'>
-                            <div id='jqxTree' style='float: left; margin-left: 20px;'>
+            <div id='jqxWidget'>
+                <div style='float: left;'>
+                    <div id='jqxTree' style='float: left; margin-left: 20px;'>
+                        <ul>
+                            <%
+                                List children = (List)session.getAttribute("children");
+                                for(int i=0;i<children.size();i++){
+                                    List  subChil= (List)session.getAttribute("childrenof"+i);
+                            %>
+                            <li item-expanded='false'>
+                                <%=FiboDB.getFiboTermById(Integer.parseInt((String)children.get(i))).getFiboTerm()%>
                                 <ul>
                                     <%
-                                        List children = (List)session.getAttribute("children");
-                                        for(int i=0;i<children.size();i++){
-                                            List  subChil= (List)session.getAttribute("childrenof"+i);
+                                        for(int x=0;x<subChil.size();x++) {
+
                                     %>
-                                    <li item-expanded='false'>
-                                        <%=FiboDB.getFiboTermById(Integer.parseInt((String)children.get(i))).getFiboTerm()%>
+                                    <li>
+                                        <%=FiboDB.getFiboTermById(Integer.parseInt((String)subChil.get(x))).getFiboTerm()%>
                                         <ul>
                                             <%
-                                                for(int x=0;x<subChil.size();x++) {
-
+                                                try{
+                                                    List subChil2 = (List) session.getAttribute("subChiof"+i+""+x);
+                                                    for(int z=0;z<subChil2.size();z++) {
                                             %>
                                             <li>
-                                                <%=FiboDB.getFiboTermById(Integer.parseInt((String)subChil.get(x))).getFiboTerm()%>
-                                                <ul>
-                                                    <%
-                                                        try{
-                                                            List subChil2 = (List) session.getAttribute("subChiof"+i+""+x);
-                                                            for(int z=0;z<subChil2.size();z++) {
-                                                    %>
-                                                    <li>
-                                                        <%=FiboDB.getFiboTermById(Integer.parseInt((String)subChil2.get(z))).getFiboTerm()%>
-                                                        <%
-                                                                }
-
-                                                            }catch (Exception e){}
-                                                        %>
-
-                                                    </li>
-                                                </ul>
+                                                <%=FiboDB.getFiboTermById(Integer.parseInt((String)subChil2.get(z))).getFiboTerm()%>
                                                 <%
-                                                    }
+                                                        }
+
+                                                    }catch (Exception e){}
                                                 %>
 
                                             </li>
                                         </ul>
+                                        <%
+                                            }
+                                        %>
+
                                     </li>
-                                    <%
-                                        }
-                                    %>
-
                                 </ul>
-                            </div>
-                            <div style='margin-left: 60px; float: left;'>
-                            </div>
-                        </div>
+                            </li>
+                            <%
+                                }
+                            %>
+
+                        </ul>
                     </div>
-                    <div><input id="submit" type="submit" /></div>
-                    </form>
-                </tr>
+                    <div style='margin-left: 60px; float: left;'>
+                    </div>
+                </div>
+            </div>
+            <div><input id="submit" type="submit" /></div>
+            </br></br></br></br></br></br></br></br></br></br></br></br></br></br></br></br></br>
+            <div id="jqxgrid" align="right"></div>
 
-
-                <tr><td colspan="3">&nbsp;</td></tr>
-
-
-                <form name="docForm" method="post" action="getsimilardocs">
-                    <tr>
-                        <td colspan="3">
-                            <% if (request.getMethod().equals("POST")) {%>
-
-                            <br/>
-                            <table class="gridtable" width="100%">
-                                <tbody>
-                                <tr>
-                                    <td><b> DocID </b></td>
-                                    <td><b> SimScore </b></td>
-
-                                </tr>
-                                <%
-                                    HashMap<Integer,Double> topKDocs = (HashMap<Integer,Double>)session.getAttribute("topKDocs");
-
-                                    for (Map.Entry entryParent: topKDocs.entrySet()){
-                                        if((Double) entryParent.getValue()!=0.0){
-                                            String docID =entryParent.getKey().toString();
-                                            double SimScore=(Double) entryParent.getValue();
-
-                                %>
-                                <tr>
-                                    <td> <%=docID%> </td>
-                                    <td> <%=SimScore%> </td>
-
-                                </tr>
-
-                                <%
-                                        }
-                                    }
-
-                                %>
-
-
-                                </tbody>
-                            </table>
-                            <% }%>
-
-                        </td>
-                    </tr>
-
-                    <tr><td colspan="3">&nbsp;</td></tr>
-                    <tr><td colspan="3">&nbsp;</td></tr>
-                </form>
-
-                </tbody>
-            </table>
             <br/>
             <br/>
         </div>
@@ -301,7 +284,5 @@
     </div>
 
 </div>
-
-
 </body>
 </html>
