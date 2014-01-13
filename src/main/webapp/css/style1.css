@@ -1,0 +1,39 @@
+.hidden{
+  display:none;
+}
+.clearline{
+  height:1px;
+  width: 100%;
+  clear:both;
+  line-height:1px;
+}
+
+#conteneur, #header {
+  width:964px;
+  margin:0 auto 0 auto;
+  font-size:0.8em;
+}
+
+#conteneur{
+  margin-top:12px;
+  color:transparent;
+  border:1px solid #e6e6e6;
+  font-size:0.8em;
+  padding:10px;
+}
+
+
+.nimble-loader{
+  width: 330px;
+  height:250px;
+  margin-bottom:10px;
+  overflow:auto;
+}
+#counter-span{
+  display:block;
+  width:100%;
+  color:#34383e;
+  font-weight:bolder;
+  font-size:100px;
+  text-align:center;
+}

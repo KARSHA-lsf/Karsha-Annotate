@@ -12,6 +12,9 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 
     <link rel="stylesheet" href="jqwidgets1/jqwidgets/styles/jqx.base.css" type="text/css" />
+    <link rel="stylesheet" href="css/loader.css" media="screen" type="text/css" />
+    <link rel="stylesheet" href="css/style1.css" media="screen" type="text/css" />
+    <link href="http://www.jqueryscript.net/css/top.css" rel="stylesheet" type="text/css">
     <script type="text/javascript" src="jqwidgets1/scripts/gettheme.js"></script>
     <script type="text/javascript" src="scripts/jquery-1.8.1.min.js"></script>
     <script type="text/javascript" src="jqwidgets1/jqwidgets/jqxcore.js"></script>
@@ -25,14 +28,35 @@
     <script type="text/javascript" src="jqwidgets1/jqwidgets/jqxgrid.js"></script>
     <script type="text/javascript" src="jqwidgets1/jqwidgets/jqxgrid.selection.js"></script>
     <script type="text/javascript" src="jqwidgets1/jqwidgets/jqxcheckbox.js"></script>
+    <script type="text/javascript" src="scripts/jquery.nimble.loader.js"></script>
     <script type="text/javascript">
         $(document).ready(function () {
 
             var theme = getDemoTheme();
+            var params = {
+                loaderClass   : "loading_bar_1",
+                debug         : true,
+                speed         : 'fast',
+                hasBackground : false,
+                zIndex        : 99
+            };
+
+            $.fn.nimbleLoader.setSettings(params);
+
             // create jqxTree
             $('#jqxTree').jqxTree({ height: '200px', hasThreeStates: true, checkboxes: true, width: '330px', theme: theme });
             $("#submit").jqxButton({ theme: theme });
             $("#submit").bind('click', function () {
+                $("body").nimbleLoader("show", {
+                    position             : "fixed",
+                    loaderClass          : "loading_bar_body",
+                    debug                : true,
+                    speed                : 700,
+                    hasBackground        : true,
+                    zIndex               : 999,
+                    backgroundColor      : "transparent",
+                    backgroundOpacity    : 1
+                });
                 var str = "";
                 var checkedItems= new Array();
                 var items = $('#jqxTree').jqxTree('getCheckedItems');
@@ -42,7 +66,7 @@
                     checkedItems[i]=item.label;
                 }
                 $.post("getsimilardocs", {items:JSON.stringify(checkedItems)}, function(response){
-
+                    $("body").nimbleLoader("hide");
                     // prepare the data
                     var data = new Array();
                     var docIds;
@@ -70,11 +94,11 @@
                     });
                     $("#jqxgrid").jqxGrid(
                             {
-                                width: 200,
+                                width: '540px',
                                 source: dataAdapter,
                                 columns: [
-                                    { text: 'Doc ID', datafield: 'docID', width: 100 },
-                                    { text: 'SimScore', datafield: 'simScore', width: 100 }
+                                    { text: 'Doc ID', datafield: 'docID', width: '430px' },
+                                    { text: 'SimScore', datafield: 'simScore', width: '100px' }
                                 ]
                             });
 
@@ -136,7 +160,6 @@
     <title>Karsha Annotation Tool </title>
 </head>
 <body class='default'>
-
 <div id="container">
     <div id="sitename">
         <h1>Karsha</h1>
@@ -270,7 +293,7 @@
             </div>
             <div><input id="submit" type="submit" /></div>
             </br></br></br></br></br></br></br></br></br></br></br></br></br></br></br></br></br>
-            <div id="jqxgrid" align="right"></div>
+            <div id="jqxgrid" style='float: left; margin-left: 20px;'></div>
 
             <br/>
             <br/>
